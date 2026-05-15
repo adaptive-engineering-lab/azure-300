@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai300game.local/contracts/product-id.schema.json",
+  "title": "Product Identification Item",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "domain",
+    "topic",
+    "difficulty",
+    "source",
+    "content"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id":           { "type": "string", "format": "uuid" },
+    "type":         { "const": "product-id" },
+    "domain":       { "$ref": "#/$defs/domain" },
+    "topic":        { "type": "string", "minLength": 1 },
+    "difficulty":   { "type": "integer", "minimum": 1, "maximum": 3 },
+    "source":       { "$ref": "#/$defs/source" },
+    "reviewer_id":  { "type": "string", "minLength": 1 },
+    "reviewed_at":  { "type": "string", "format": "date-time" },
+    "tags":         { "type": "array", "items": { "type": "string" } },
+    "content": {
+      "type": "object",
+      "required": ["service_name", "category", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "service_name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "category":     {
+          "enum": ["Networking", "Security", "Compute", "Storage", "Identity", "Monitoring", "Database", "Integration"]
+        },
+        "description":  { "type": "string", "minLength": 1, "maxLength": 600 },
+        "icon_url":     { "type": "string", "minLength": 1 },
+        "common_confusions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "maxItems": 5
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if":   { "properties": { "source": { "const": "ai-generated" } } },
+      "then": { "required": ["reviewer_id", "reviewed_at"] }
+    }
+  ],
+  "$defs": {
+    "domain": {
+      "enum": [
+        "mlops-infra",
+        "ml-lifecycle",
+        "genaiops-infra",
+        "genai-quality",
+        "genai-optimization"
+      ]
+    },
+    "source": { "enum": ["bank", "ai-generated"] }
+  }
+}

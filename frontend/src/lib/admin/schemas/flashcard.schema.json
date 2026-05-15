@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai300game.local/contracts/flashcard.schema.json",
+  "title": "Flashcard Question",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "domain",
+    "topic",
+    "difficulty",
+    "source",
+    "content"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id":           { "type": "string", "format": "uuid" },
+    "type":         { "const": "flashcard" },
+    "domain":       { "$ref": "#/$defs/domain" },
+    "topic":        { "type": "string", "minLength": 1 },
+    "difficulty":   { "type": "integer", "minimum": 1, "maximum": 3 },
+    "source":       { "$ref": "#/$defs/source" },
+    "reviewer_id":  { "type": "string", "minLength": 1 },
+    "reviewed_at":  { "type": "string", "format": "date-time" },
+    "tags":         { "type": "array", "items": { "type": "string" } },
+    "content": {
+      "type": "object",
+      "required": ["front", "back"],
+      "additionalProperties": false,
+      "properties": {
+        "front": { "type": "string", "minLength": 1, "maxLength": 280 },
+        "back":  { "type": "string", "minLength": 1, "maxLength": 800 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if":   { "properties": { "source": { "const": "ai-generated" } } },
+      "then": { "required": ["reviewer_id", "reviewed_at"] }
+    }
+  ],
+  "$defs": {
+    "domain": {
+      "enum": [
+        "mlops-infra",
+        "ml-lifecycle",
+        "genaiops-infra",
+        "genai-quality",
+        "genai-optimization"
+      ]
+    },
+    "source": { "enum": ["bank", "ai-generated"] }
+  }
+}

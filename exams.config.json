@@ -1,0 +1,118 @@
+{
+  "exams": [
+    {
+      "code": "AI-300",
+      "title": "Operationalize Machine Learning and Generative AI Solutions",
+      "certificationTitle": "Microsoft Certified: Machine Learning Operations Engineer Associate",
+      "level": "Intermediate",
+      "passMark": 700,
+      "productionUrl": "ai-300.yourdomain.com",
+
+      "domains": [
+        {
+          "slug": "mlops-infra",
+          "label": "Design and Implement an MLOps Infrastructure",
+          "weight": "15-20",
+          "topics": [
+            "Workspace", "Datastores", "Compute", "IAM",
+            "Data Assets", "Environments", "Components",
+            "Registries", "IaC", "GitHub Integration"
+          ]
+        },
+        {
+          "slug": "ml-lifecycle",
+          "label": "Implement Machine Learning Model Lifecycle and Operations",
+          "weight": "25-30",
+          "topics": [
+            "MLflow", "AutoML", "Notebooks", "Hyperparameter Tuning",
+            "Training Scripts", "Distributed Training", "Pipelines",
+            "Model Registration", "Responsible AI", "Online Endpoints",
+            "Batch Endpoints", "Progressive Rollout", "Data Drift", "Monitoring"
+          ]
+        },
+        {
+          "slug": "genaiops-infra",
+          "label": "Design and Implement a GenAIOps Infrastructure",
+          "weight": "20-25",
+          "topics": [
+            "Foundry Setup", "Managed Identities", "RBAC", "Network Security",
+            "Bicep", "Model Catalog", "Serverless Endpoints", "Managed Compute",
+            "Provisioned Throughput", "Prompt Versioning", "Prompt Flow"
+          ]
+        },
+        {
+          "slug": "genai-quality",
+          "label": "Implement Generative AI Quality Assurance and Observability",
+          "weight": "10-15",
+          "topics": [
+            "Evaluation Metrics", "Test Datasets", "Groundedness",
+            "Relevance", "Coherence", "Fluency", "Safety Evaluators",
+            "Risk Evaluation", "Observability", "Logging", "Tracing",
+            "Latency", "Token Cost", "Continuous Monitoring"
+          ]
+        },
+        {
+          "slug": "genai-optimization",
+          "label": "Optimize Generative AI Systems and Model Performance",
+          "weight": "10-15",
+          "topics": [
+            "RAG", "Chunk Size", "Similarity Threshold", "Hybrid Search",
+            "Embedding Models", "Fine-tuning", "Synthetic Data",
+            "Fine-tuned Model Deployment", "A/B Testing", "Relevance Metrics"
+          ]
+        }
+      ],
+
+      "learningPaths": [
+        {
+          "id": "lp1",
+          "title": "Operationalize machine learning models (MLOps)",
+          "url": "https://learn.microsoft.com/en-us/training/paths/build-first-machine-operations-workflow/",
+          "moduleCount": 7,
+          "domains": ["mlops-infra", "ml-lifecycle"]
+        },
+        {
+          "id": "lp2",
+          "title": "Operationalize generative AI applications (GenAIOps)",
+          "url": "https://learn.microsoft.com/en-us/training/paths/operationalize-gen-ai-apps/",
+          "moduleCount": 2,
+          "domains": ["genaiops-infra", "genai-quality", "genai-optimization"]
+        },
+        {
+          "id": "lp3",
+          "title": "Operationalize AI responsibly with Azure AI Foundry",
+          "url": "https://learn.microsoft.com/en-us/training/paths/operationalize-ai-responsibly/",
+          "moduleCount": 3,
+          "domains": ["genai-quality"]
+        }
+      ],
+
+      "questionTargets": {
+        "total": 200,
+        "perDomain": {
+          "mlops-infra": 30,
+          "ml-lifecycle": 80,
+          "genaiops-infra": 50,
+          "genai-quality": 20,
+          "genai-optimization": 20
+        },
+        "byType": {
+          "flashcard": 80,
+          "mcq": 120,
+          "product-id": 0
+        }
+      },
+
+      "gameModes": {
+        "flashcard": true,
+        "mcq": true,
+        "productId": false
+      },
+
+      "difficultyConfig": {
+        "lp3MaxDifficulty": 2,
+        "defaultMax": 3
+      }
+    }
+  ]
+}
