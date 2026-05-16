@@ -17,7 +17,7 @@ Order is dependency-aware. `[P]` = can run in parallel with the previous task.
 - **T010** Create `contracts/code-review.schema.json` with the exact JSON Schema from `specs/006-code-review-mode/spec.md` § "JSON Schema Contract".
 - **T011** [P] Add a vitest unit test `frontend/tests/unit/code-review-schema.test.ts` (or under `tools/seed/tests/`, wherever the existing schema tests live) that loads the schema via ajv and validates: (a) a known-good fixture row, (b) a row with `correct: "E"` (rejected), (c) a row missing `explanation` (rejected), (d) a row with `sub_mode: "find-the-bug"` and `language: "python"` (passes).
 - **T012** Update the seed CLI's schema map to register `code-review` → `contracts/code-review.schema.json`. Re-run the seed-CLI unit tests (feature 001's `tools/seed/tests/`) — they should all still pass.
-- **T020** Create `supabase/migrations/0017_code_review_type.sql`:
+- **T020** Create `supabase/migrations/0014_code_review_type.sql`:
   ```sql
   alter table public.questions drop constraint if exists questions_type_chk;
   alter table public.questions

@@ -23,6 +23,7 @@ Order is dependency-aware. `[P]` = can run in parallel with the previous task.
 - **T021** Create `frontend/src/lib/stats/xp.ts` exporting `computeXP(progressEntries, sessions)` → `totalXP`, and `xpToLevel(total)` → `level`. Implements FR-014 + FR-015.
 - **T022** [P] Create `frontend/src/lib/stats/streak.ts` exporting `computeStreak(sessions, today)` → `{ current, longest, activeDates }`. "Day" = local calendar day at session start (FR-013).
 - **T023** [P] Create `frontend/src/lib/stats/domainAccuracy.ts` exporting `rollup(progressEntries, bank)` → `DomainAccuracy[]`. Marks `dimmed: true` for domains with `answered < MIN_SAMPLES`.
+- **T023b** [P] Create `frontend/src/lib/stats/useDomainAccuracy.ts` — hook that reads `useProgressStore()` + the bank, memoizes the `rollup(...)` call, and returns `{ rows: DomainAccuracy[], weakest: DomainAccuracy | null }`. Consumed by `DomainRadar` / `FocusAreasList` (T040/T041) and by feature 008's Daily Review results screen (its T070).
 - **T024** [P] Create `frontend/src/lib/stats/calendar.ts` exporting `bucket(sessions, now)` → 12-week grid; each cell `{ date, sessionCount, totalMinutes, filled }`. Honors local timezone.
 - **T025** [P] `frontend/tests/unit/stats-xp.test.ts` — fixtures for each FR-014 rule + every `xpToLevel` boundary.
 - **T026** [P] `frontend/tests/unit/stats-streak.test.ts` — current-run, longest-run, today-counts-only-if-played, timezone-crossing session counts to the day it started.

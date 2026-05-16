@@ -55,7 +55,7 @@ contracts/                                            # (created by feature 001)
 └── code-review.schema.json                           # full schema from spec; loaded by ajv
 
 supabase/migrations/
-└── 0017_code_review_type.sql                         # drop + recreate questions_type_chk
+└── 0014_code_review_type.sql                         # drop + recreate questions_type_chk
 
 tools/author/
 ├── src/claude/prompts/draft-code-review.ts          # added in feature 009 to support this type
@@ -83,7 +83,7 @@ The bundle cost of `shiki` is the main concern. Naïve import pulls every gramma
 | `shiki` over Prism | Better dark-theme defaults, more accurate highlighting for YAML + Python; tree-shakeable grammars. |
 | Lazy-load the highlighter | Keep home / `/learn` route bundles unaffected; first nav to `/learn/code-review` pays the cost. |
 | Resume snapshot in localStorage even for authenticated users | FR-011 + spec edge case (mid-session navigation). Authenticated learners get the same resume; on session completion the snapshot is cleared and the `sessions` row is the durable record. |
-| New migration on the `questions_type_chk` constraint | The constraint hardcodes the type list; adding `'code-review'` requires `drop + recreate`. Captured in 0017. |
+| New migration on the `questions_type_chk` constraint | The constraint hardcodes the type list; adding `'code-review'` requires `drop + recreate`. Captured in 0014. |
 
 ## Cross-feature coordination
 

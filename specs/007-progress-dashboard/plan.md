@@ -48,6 +48,7 @@ frontend/
             ├── streak.ts                    # computeStreak(sessions, today) → { current, longest, activeDates }
             ├── xp.ts                        # computeXP(progressEntries, sessions) → totalXP; xpToLevel(total) → level
             ├── domainAccuracy.ts            # rollup(progressEntries, bank) → DomainAccuracy[]
+            ├── useDomainAccuracy.ts         # hook wrapper consumed by 007 components + feature 008
             ├── calendar.ts                  # bucket(sessions) → 12-week grid
             └── thresholds.ts                # constants: WEAK_THRESHOLD=0.6, MIN_SAMPLES=5, LEVELS
 ```
