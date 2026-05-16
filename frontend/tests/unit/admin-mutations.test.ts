@@ -37,11 +37,11 @@ beforeEach(() => {
 describe('admin mutations', () => {
   it('createQuestion inserts with stamped reviewer/reviewed_at and a sha256 content_hash', async () => {
     nextResult = {
-      data: { id: 'fixed-id', type: 'flashcard', topic: 't', difficulty: 1, domain: 'storage', source: 'bank', content: { a: 1 } },
+      data: { id: 'fixed-id', type: 'flashcard', topic: 't', difficulty: 1, domain: 'ml-lifecycle', source: 'bank', content: { a: 1 } },
       error: null,
     };
     await createQuestion(
-      { type: 'flashcard', domain: 'storage', topic: 't', difficulty: 1, source: 'bank', content: { a: 1 } },
+      { type: 'flashcard', domain: 'ml-lifecycle', topic: 't', difficulty: 1, source: 'bank', content: { a: 1 } },
       'lanre@example.com',
     );
 
@@ -93,7 +93,7 @@ describe('admin mutations', () => {
     nextResult = { data: null, error: { message: 'rls denied' } };
     await expect(
       createQuestion(
-        { type: 'flashcard', domain: 'storage', topic: 't', difficulty: 1, source: 'bank', content: {} },
+        { type: 'flashcard', domain: 'ml-lifecycle', topic: 't', difficulty: 1, source: 'bank', content: {} },
         'x',
       ),
     ).rejects.toMatchObject({ message: 'rls denied' });

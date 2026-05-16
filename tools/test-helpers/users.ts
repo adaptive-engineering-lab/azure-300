@@ -13,7 +13,7 @@ export async function createTestUser(label?: string): Promise<TestUser> {
   const admin = serviceRoleClient();
   const suffix = label ?? Math.random().toString(36).slice(2, 10);
   const email = `${TEST_EMAIL_PREFIX}${suffix}@${TEST_DOMAIN}`;
-  const password = `Test-${suffix}-Az104!`;
+  const password = `Test-${suffix}-Ai300!`;
 
   const { data, error } = await admin.auth.admin.createUser({
     email,

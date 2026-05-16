@@ -5,7 +5,7 @@ function makeItem(id: string, overrides: Partial<QuestionItem> = {}): QuestionIt
   return {
     id,
     type: 'flashcard',
-    domain: 'storage',
+    domain: 'ml-lifecycle',
     topic: 'blob',
     difficulty: 1,
     source: 'bank',

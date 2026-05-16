@@ -37,7 +37,7 @@ function reset() {
 const itemA = {
   id: 'a',
   type: 'flashcard' as const,
-  domain: 'storage',
+  domain: 'ml-lifecycle',
   topic: 't',
   difficulty: 1,
   source: 'bank' as const,
@@ -90,7 +90,7 @@ describe('useAdminQuestionsStore', () => {
     await useAdminQuestionsStore
       .getState()
       .create(
-        { type: 'flashcard', domain: 'storage', topic: 't', difficulty: 1, source: 'bank', content: { front: 'f', back: 'b' } },
+        { type: 'flashcard', domain: 'ml-lifecycle', topic: 't', difficulty: 1, source: 'bank', content: { front: 'f', back: 'b' } },
         'reviewer',
       );
 

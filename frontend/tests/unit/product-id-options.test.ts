@@ -6,7 +6,7 @@ function make(category: string, common_confusions: string[] = []): ProductIdQues
   return {
     id: 'x',
     type: 'product-id',
-    domain: 'networking',
+    domain: 'genai-quality',
     topic: 't',
     difficulty: 1,
     content: { service_name: 'X', category, description: 'd', common_confusions },

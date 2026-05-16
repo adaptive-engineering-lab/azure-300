@@ -25,7 +25,7 @@ describe('author promote (feature 009)', () => {
     const item = {
       id: '00000000-0000-4000-8000-000000aaaaaa',
       type: 'flashcard',
-      domain: 'storage',
+      domain: 'ml-lifecycle',
       topic: 'test',
       difficulty: 1,
       source: 'bank',
@@ -47,7 +47,7 @@ describe('author promote (feature 009)', () => {
     const valid = {
       id: '00000000-0000-4000-8000-000000bbbbbb',
       type: 'flashcard',
-      domain: 'storage',
+      domain: 'ml-lifecycle',
       topic: 'test',
       difficulty: 1,
       source: 'bank',
