@@ -13,7 +13,7 @@ A learner opens the flashcard mode, picks a topic (or "random mix"), chooses a s
 
 **Why this priority**: Flashcards are the fastest path to a playable, study-relevant moment. They prove the data layer's read path end-to-end and exercise the guest progress store. They are the smallest non-zero step from "skeleton" to "actually useful study tool."
 
-**Independent Test**: As a guest learner, start a session in the Networking topic with 10 cards. Flip and rate each card. Verify the session ends after exactly 10 cards, the results screen shows three counts (got it / almost / missed) summing to 10, and the progress store now contains one entry per rated question.
+**Independent Test**: As a guest learner, start a session in the MLflow topic with 10 cards. Flip and rate each card. Verify the session ends after exactly 10 cards, the results screen shows three counts (got it / almost / missed) summing to 10, and the progress store now contains one entry per rated question.
 
 **Acceptance Scenarios**:
 

@@ -97,16 +97,16 @@
           "genai-optimization": 20
         },
         "byType": {
-          "flashcard": 80,
-          "mcq": 120,
-          "product-id": 0
+          "flashcard": 70,
+          "mcq": 90,
+          "code-review": 40
         }
       },
 
       "gameModes": {
         "flashcard": true,
         "mcq": true,
-        "productId": false
+        "codeReview": true
       },
 
       "difficultyConfig": {
