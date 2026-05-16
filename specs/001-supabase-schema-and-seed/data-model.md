@@ -32,7 +32,7 @@ CREATE TABLE public.questions (
   created_at   timestamptz NOT NULL DEFAULT now(),
 
   CONSTRAINT questions_type_chk
-    CHECK (type IN ('flashcard', 'mcq', 'product-id')),
+    CHECK (type IN ('flashcard', 'mcq', 'code-review')),
 
   CONSTRAINT questions_domain_chk
     CHECK (domain IN (
@@ -57,11 +57,13 @@ CREATE TABLE public.questions (
 
   CONSTRAINT questions_content_shape_chk
     CHECK (
-      (type = 'flashcard'  AND content ? 'front' AND content ? 'back')
-      OR (type = 'mcq'        AND content ? 'question' AND content ? 'options'
-                              AND content ? 'correct'  AND content ? 'explanation')
-      OR (type = 'product-id' AND content ? 'service_name' AND content ? 'category'
-                              AND content ? 'description')
+      (type = 'flashcard'    AND content ? 'front' AND content ? 'back')
+      OR (type = 'mcq'           AND content ? 'question' AND content ? 'options'
+                                 AND content ? 'correct'  AND content ? 'explanation')
+      OR (type = 'code-review'   AND content ? 'sub_mode'  AND content ? 'language'
+                                 AND content ? 'snippet'   AND content ? 'prompt'
+                                 AND content ? 'options'   AND content ? 'correct'
+                                 AND content ? 'explanation')
     )
 );
 
@@ -216,7 +218,7 @@ CREATE TABLE public.sessions (
   completed_at     timestamptz NOT NULL DEFAULT now(),
 
   CONSTRAINT sessions_mode_chk
-    CHECK (mode IN ('flashcards', 'mcq', 'product-id', 'daily-review')),
+    CHECK (mode IN ('flashcards', 'mcq', 'code-review', 'daily-review')),
 
   CONSTRAINT sessions_score_chk
     CHECK (score_pct IS NULL OR (score_pct >= 0 AND score_pct <= 100))

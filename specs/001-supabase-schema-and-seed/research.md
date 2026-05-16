@@ -97,23 +97,23 @@ All `NEEDS CLARIFICATION` markers were resolved during `/speckit-clarify` (see [
 
 **Alternatives considered**:
 
-- **Separate `flashcards`, `mcq_questions`, `product_id_questions` tables**: stronger typing, three-way join to query across types. Rejected — the read patterns are "all questions for domain X, any type," which `jsonb` serves cheaply.
+- **Separate `flashcards`, `mcq_questions`, `code_review_questions` tables**: stronger typing, three-way join to query across types. Rejected — the read patterns are "all questions for domain X, any type," which `jsonb` serves cheaply.
 - **Database-only validation via deep `jsonb` CHECK predicates**: very verbose Postgres, hard to keep in sync with the contract file. Rejected.
 
 ---
 
-## 7. Product-ID icon storage
+## 7. Code-review snippet rendering
 
-**Decision**: Out of scope for this feature. The `content.icon_url` field on `product-id` rows is a string; whether it points at Supabase Storage, a CDN, or `/icons/*.svg` shipped with the frontend is a downstream call. The seed accepts any non-empty URL-like string and does not fetch.
+**Decision**: Out of scope for this feature. The `content.snippet` field on `code-review` rows is a plain JSON string; how the frontend tokenizes and syntax-highlights it (Shiki, Prism, or a hand-rolled tokenizer) is a downstream call documented in feature 006's plan and feature 010's bundle-budget audit.
 
 **Rationale**:
 
-- Resolved decision #3 makes "official Microsoft icons" the intent but flags a licensing review as a Phase 1 task — that review may invalidate the URL shape we'd pick today.
-- Decoupling storage location from the schema means the icon-hosting decision can land independently without a migration.
+- Schema-level concerns end at "the snippet round-trips losslessly" — anything renderer-specific (theme, language grammars, lazy-load shape) belongs in the frontend feature where it has a consumer.
+- Decoupling rendering from the schema means a future change of highlighter (or adding a new language) lands without a migration.
 
 **Alternatives considered**:
 
-- **Wire up Supabase Storage in this feature**: premature; Storage adds policies, buckets, and CORS that have no consumer yet. Rejected.
+- **Ship pre-tokenized HTML in `content.snippet`**: bloats the JSON, locks in a renderer, defeats theme switching. Rejected.
 
 ---
 

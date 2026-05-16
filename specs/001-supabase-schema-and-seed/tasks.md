@@ -72,7 +72,7 @@ Per plan.md → Project Structure (web app, data-layer slice):
 - [ ] T013 [P] [US1] Migration at `supabase/migrations/0002_questions_rls.sql` — `ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY` + `questions_public_read` policy granting `SELECT` to `anon, authenticated`; no write policies
 - [ ] T014 [P] [US1] Author `supabase/seed/content/flashcards.json` — ~15 flashcard items, ≥1 per domain, all with authored UUIDs, `source: "bank"`, valid against `contracts/flashcard.schema.json`
 - [ ] T015 [P] [US1] Author `supabase/seed/content/mcq.json` — ~25 MCQ items, ≥1 per domain, complete options/correct/explanation, valid against `contracts/mcq.schema.json`
-- [ ] T016 [P] [US1] Author `supabase/seed/content/product-id.json` — ~10 product-ID items, ≥1 per domain, valid against `contracts/product-id.schema.json`
+- [ ] T016 [P] [US1] Author `supabase/seed/content/code-review.json` — ~10 code-review items, ≥1 per domain, valid against `contracts/code-review.schema.json`
 - [ ] T017 [US1] Implement minimal upsert at `tools/seed/lib/upsert.ts` — exports `upsertQuestions(rows)`; uses service-role client; performs `INSERT ... ON CONFLICT (id) DO UPDATE` (production-grade short-circuit lands in US2); writes `content_hash` from T006
 - [ ] T018 [US1] Implement content loader at `tools/seed/lib/load-content.ts` — reads the three JSON files, returns a flat array typed as `QuestionRow[]`
 - [ ] T019 [US1] Implement seed entry point at `tools/seed/seed.ts` — wires `load-content` → `upsert` → prints `Seed complete: X inserted, Y updated, Z unchanged. Elapsed: Nms.` (per `contracts/seed-cli.md`); depends on T006, T017, T018
@@ -184,7 +184,7 @@ Task: "T012 Migration 0001_questions.sql"
 Task: "T013 Migration 0002_questions_rls.sql"
 Task: "T014 Author flashcards.json"
 Task: "T015 Author mcq.json"
-Task: "T016 Author product-id.json"
+Task: "T016 Author code-review.json"
 
 # Then sequentially:
 Task: "T017 lib/upsert.ts"          # depends on Foundational T006

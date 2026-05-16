@@ -48,7 +48,7 @@ specs/001-supabase-schema-and-seed/
 ├── contracts/           # Phase 1 output
 │   ├── flashcard.schema.json
 │   ├── mcq.schema.json
-│   ├── product-id.schema.json
+│   ├── code-review.schema.json
 │   └── seed-cli.md
 ├── checklists/
 │   └── requirements.md  # From /speckit-specify
@@ -71,7 +71,7 @@ supabase/
     └── content/
         ├── flashcards.json
         ├── mcq.json
-        └── product-id.json
+        └── code-review.json
 
 tools/
 ├── package.json

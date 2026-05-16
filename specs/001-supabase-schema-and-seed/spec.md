@@ -25,7 +25,7 @@ A learner opening the app for the first time can immediately study from a curate
 
 **Acceptance Scenarios**:
 
-1. **Given** a freshly seeded environment, **When** a client queries for items in the "Networking" domain, **Then** the response includes at least one flashcard, one MCQ, and one product-ID entry, and each item carries `domain`, `topic`, `difficulty`, `type`, and `source` fields.
+1. **Given** a freshly seeded environment, **When** a client queries for items in the `genai-quality` domain, **Then** the response includes at least one flashcard, one MCQ, and one code-review entry, and each item carries `domain`, `topic`, `difficulty`, `type`, and `source` fields.
 2. **Given** the seed bank, **When** an item is fetched by its ID, **Then** the type-specific payload (e.g., MCQ options + correct + explanation; flashcard front/back; product-ID category/description) is complete with no null required fields.
 3. **Given** the seed bank, **When** every domain is queried in turn, **Then** all five AI-300 domains return at least one item per type.
 
@@ -77,11 +77,11 @@ When an authenticated learner answers a question, rates a flashcard, or complete
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST store questions of three types — flashcard, MCQ, and product-ID — in a single queryable collection, with a shared metadata envelope (`id`, `type`, `domain`, `topic`, `difficulty`, `source`, `created_at`) and a type-specific payload.
-- **FR-002**: The system MUST enforce that `domain` is one of the five fixed AI-300 domains: Identity & Governance, Storage, Compute, Networking, Monitoring. Any other value MUST be rejected.
-- **FR-003**: The system MUST enforce that `type` is one of: `flashcard`, `mcq`, `product-id`. Any other value MUST be rejected.
+- **FR-001**: The system MUST store questions of three types — flashcard, MCQ, and code-review — in a single queryable collection, with a shared metadata envelope (`id`, `type`, `domain`, `topic`, `difficulty`, `source`, `created_at`) and a type-specific payload.
+- **FR-002**: The system MUST enforce that `domain` is one of the five fixed AI-300 domains: `mlops-infra`, `ml-lifecycle`, `genaiops-infra`, `genai-quality`, `genai-optimization`. Any other value MUST be rejected.
+- **FR-003**: The system MUST enforce that `type` is one of: `flashcard`, `mcq`, `code-review`. Any other value MUST be rejected.
 - **FR-004**: The system MUST enforce that `source` is one of: `bank`, `ai-generated`. Every question row MUST carry two audit fields, `reviewer_id` and `reviewed_at`. Both fields are nullable in general but MUST be non-null whenever `source = 'ai-generated'` — this constraint MUST be enforced at the database level (not only at seed time).
-- **FR-005**: The system MUST validate each type's payload against its contract before insert: MCQ requires `question`, `options` (exactly 4), `correct`, `explanation`; flashcard requires `front`, `back`; product-ID requires `service_name`, `category`, `description`.
+- **FR-005**: The system MUST validate each type's payload against its contract before insert: MCQ requires `question`, `options` (exactly 4), `correct`, `explanation`; flashcard requires `front`, `back`; code-review requires `sub_mode`, `language`, `snippet`, `prompt`, `options` (A–D), `correct`, `explanation`.
 - **FR-006**: The system MUST ship 50 seeded questions covering all five domains and all three types, with at least one item per (domain, type) pair.
 - **FR-007**: The system MUST expose a maintainer-run seed process that is idempotent: re-running with an unchanged source file produces zero new rows and zero mutations. Idempotency is achieved by the seed file supplying each item's `id` as a deterministic UUID assigned at authoring time; the seed command performs upsert-by-id.
 - **FR-008**: The seed process MUST reject the entire batch on any validation failure and surface the offending item ID and field; no partial writes are permitted.
