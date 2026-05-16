@@ -17,15 +17,9 @@ Order is dependency-aware. `[P]` = can run in parallel with the previous task.
 - **T010** Create `contracts/code-review.schema.json` with the exact JSON Schema from `specs/006-code-review-mode/spec.md` § "JSON Schema Contract".
 - **T011** [P] Add a vitest unit test `frontend/tests/unit/code-review-schema.test.ts` (or under `tools/seed/tests/`, wherever the existing schema tests live) that loads the schema via ajv and validates: (a) a known-good fixture row, (b) a row with `correct: "E"` (rejected), (c) a row missing `explanation` (rejected), (d) a row with `sub_mode: "find-the-bug"` and `language: "python"` (passes).
 - **T012** Update the seed CLI's schema map to register `code-review` → `contracts/code-review.schema.json`. Re-run the seed-CLI unit tests (feature 001's `tools/seed/tests/`) — they should all still pass.
-- **T020** Create `supabase/migrations/0014_code_review_type.sql`:
-  ```sql
-  alter table public.questions drop constraint if exists questions_type_chk;
-  alter table public.questions
-    add constraint questions_type_chk
-    check (type in ('flashcard', 'mcq', 'code-review'));
-  ```
-- **T021** Apply the migration via `mcp__supabase__apply_migration` and verify with the same `pg_get_constraintdef` query.
-- **T022** Smoke insert a fixture row via `mcp__supabase__execute_sql`: `insert into public.questions (id, type, domain, topic, difficulty, source, content) values (gen_random_uuid(), 'code-review', 'ml-lifecycle', 'MLflow', 1, 'bank', '{}'::jsonb);` — must succeed. Then `delete` it.
+- **T020** Confirm `supabase/migrations/0001_questions.sql` already accepts `'code-review'` in `questions_type_chk` AND that `questions_content_shape_chk` has the code-review branch (this landed in the 001 sanitization sweep — no separate migration needed for AI-300 v1 since the schema is not yet deployed). If the local DB has stale state, run `supabase db reset && pnpm seed:validate` to re-apply.
+- **T021** Verify via `mcp__supabase__execute_sql`: `select pg_get_constraintdef(oid) from pg_constraint where conname = 'questions_type_chk';` — output MUST include `'code-review'`.
+- **T022** Smoke insert a fixture row via `mcp__supabase__execute_sql`: `insert into public.questions (id, type, domain, topic, difficulty, source, content, content_hash) values (gen_random_uuid(), 'code-review', 'ml-lifecycle', 'MLflow', 1, 'bank', '{"sub_mode":"find-the-bug","language":"python","snippet":"x","prompt":"y","options":{"A":"a","B":"b","C":"c","D":"d"},"correct":"A","explanation":"z"}'::jsonb, 'placeholder');` — must succeed. Then `delete` it.
 
 ## Phase 2 — Selection + reducer
 

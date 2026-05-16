@@ -39,7 +39,7 @@ Order is dependency-aware. `[P]` = can run in parallel with the previous task.
   - uses `upsert` on `(user_id, question_id)` for `user_progress` with the merge result,
   - uses `upsert` on session `id` for `sessions`,
   - records the `idempotencyKey` into a `migration_runs` row keyed on `(user_id, idempotency_key)` so partial runs resume cleanly.
-- **T033** Add `supabase/migrations/0012_migration_runs.sql` creating `migration_runs(user_id uuid, idempotency_key text, completed_at timestamptz, primary key (user_id, idempotency_key))` with RLS allowing the owning user to insert/select their own rows only.
+- **T033** Add `supabase/migrations/0013_migration_runs.sql` creating `migration_runs(user_id uuid, idempotency_key text, completed_at timestamptz, primary key (user_id, idempotency_key))` with RLS allowing the owning user to insert/select their own rows only.
 - **T034** Apply the migration via `mcp__supabase__apply_migration` and verify with `pg_policies`.
 - **T035** Create `frontend/src/components/MigrationPrompt.tsx`: post-sign-in modal that reads `buildMigrationPlan`, shows the summary copy ("Save your 32 reviewed questions, 4-day streak, 240 XP?"), and exposes `Accept` / `Decline` actions. On Accept, calls `executeMigration`, surfaces progress, and on success clears the migrated localStorage keys (but retains `theme` and `defaultSessionLength` — FR-008).
 - **T036** Trigger the prompt: in `AuthProvider`, on transition from `null` → `session` for a browser that has guest progress, mount `<MigrationPrompt>` once. Track "declined" state in localStorage so it doesn't re-prompt within the 14-day grace window (FR-009).
@@ -52,7 +52,7 @@ Order is dependency-aware. `[P]` = can run in parallel with the previous task.
 
 - **T040** Add `frontend/src/pages/SettingsPage.tsx` at `/settings`: shows email (read-only), `last_active` (read-only), and an editable display-name field that persists to `profiles` via `update().eq('user_id', user.id)`.
 - **T041** [P] Add an "Account deletion" section with a two-step confirm: typing the literal phrase "delete my account" enables the destructive button. The button calls an RPC `delete_self_account()` (created below) and signs out on success.
-- **T042** Create `supabase/migrations/0013_delete_self_account.sql` defining `public.delete_self_account()` as `SECURITY DEFINER` that deletes `auth.users` where `id = auth.uid()`. Add a comment noting the cascade FKs (set up in feature 001) handle the rest. Grant `EXECUTE` to `authenticated`.
+- **T042** Create `supabase/migrations/0014_delete_self_account.sql` defining `public.delete_self_account()` as `SECURITY DEFINER` that deletes `auth.users` where `id = auth.uid()`. Add a comment noting the cascade FKs (set up in feature 001) handle the rest. Grant `EXECUTE` to `authenticated`.
 - **T043** Apply migration and smoke-test from the frontend that calling the RPC ends the session and the user's rows are gone (run a `select count(*) from user_progress where user_id = …` via MCP after).
 - **T044** Add the `/settings` route + a "Settings" entry in `<ProfileMenu>`.
 
