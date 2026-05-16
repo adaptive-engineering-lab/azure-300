@@ -11,7 +11,7 @@ create table public.sessions (
   completed_at     timestamptz not null default now(),
 
   constraint sessions_mode_chk
-    check (mode in ('flashcards', 'mcq', 'product-id', 'daily-review')),
+    check (mode in ('flashcards', 'mcq', 'code-review', 'daily-review')),
 
   constraint sessions_score_chk
     check (score_pct is null or (score_pct >= 0 and score_pct <= 100))

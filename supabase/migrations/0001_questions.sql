@@ -16,7 +16,7 @@ create table public.questions (
   created_at   timestamptz not null default now(),
 
   constraint questions_type_chk
-    check (type in ('flashcard', 'mcq', 'product-id')),
+    check (type in ('flashcard', 'mcq', 'code-review')),
 
   constraint questions_domain_chk
     check (domain in (
@@ -41,11 +41,13 @@ create table public.questions (
 
   constraint questions_content_shape_chk
     check (
-      (type = 'flashcard'  and content ? 'front'        and content ? 'back')
-      or (type = 'mcq'        and content ? 'question'  and content ? 'options'
-                              and content ? 'correct'   and content ? 'explanation')
-      or (type = 'product-id' and content ? 'service_name' and content ? 'category'
-                              and content ? 'description')
+      (type = 'flashcard'    and content ? 'front'        and content ? 'back')
+      or (type = 'mcq'           and content ? 'question'  and content ? 'options'
+                                 and content ? 'correct'   and content ? 'explanation')
+      or (type = 'code-review'   and content ? 'sub_mode'  and content ? 'language'
+                                 and content ? 'snippet'   and content ? 'prompt'
+                                 and content ? 'options'   and content ? 'correct'
+                                 and content ? 'explanation')
     )
 );
 

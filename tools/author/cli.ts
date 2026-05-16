@@ -69,7 +69,7 @@ async function main(): Promise<void> {
     return;
   }
   console.error('Usage:');
-  console.error('  author draft --type=<flashcard|mcq|product-id> --domain=<d> --topic=<t> --difficulty=<1|2|3> --count=<n> [--source-files=a.md,b.md,…]');
+  console.error('  author draft --type=<flashcard|mcq|code-review> --domain=<d> --topic=<t> --difficulty=<1|2|3> --count=<n> [--source-files=a.md,b.md,…]');
   console.error('  author promote <draft-file> --reviewer=<initials>');
   process.exit(2);
 }

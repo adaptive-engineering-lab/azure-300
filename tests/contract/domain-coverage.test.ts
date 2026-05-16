@@ -9,7 +9,7 @@ const DOMAINS = [
   'genai-optimization',
 ] as const;
 
-const TYPES = ['flashcard', 'mcq', 'product-id'] as const;
+const TYPES = ['flashcard', 'mcq', 'code-review'] as const;
 
 describe('Domain coverage (T010 / SC-002 / FR-006)', () => {
   let rows: Array<{ domain: string; type: string }>;

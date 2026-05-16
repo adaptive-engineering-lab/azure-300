@@ -19,7 +19,7 @@ const CONTRACTS_DIR = resolve(
 const SCHEMA_FILES: Record<LoadedItem['type'], string> = {
   flashcard: 'flashcard.schema.json',
   mcq: 'mcq.schema.json',
-  'product-id': 'product-id.schema.json',
+  'code-review': 'code-review.schema.json',
 };
 
 export interface ValidationError {

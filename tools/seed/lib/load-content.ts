@@ -6,11 +6,11 @@ import { contentHash } from './canonicalize.js';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_CONTENT_DIR = resolve(HERE, '..', '..', '..', 'supabase', 'seed', 'content');
 
-const DEFAULT_FILES = ['flashcards.json', 'mcq.json', 'product-id.json'] as const;
+const DEFAULT_FILES = ['flashcards.json', 'mcq.json', 'code-review.json'] as const;
 
 export interface QuestionItem {
   id: string;
-  type: 'flashcard' | 'mcq' | 'product-id';
+  type: 'flashcard' | 'mcq' | 'code-review';
   domain: string;
   topic: string;
   difficulty: number;

@@ -35,14 +35,14 @@ describe('Author prompt builder — grounded vs. ungrounded', () => {
 
   it('still injects schema, domain, topic, and difficulty regardless of source mode', () => {
     const prompt = buildPrompt(
-      { type: 'product-id', domain: 'genai-quality', topic: 'bastion', difficulty: 3, count: 7 },
+      { type: 'code-review', domain: 'genai-quality', topic: 'evaluation-metrics', difficulty: 3, count: 7 },
       SCHEMA_STUB,
       ['00000000-0000-4000-8000-000000000001'],
       [],
     );
-    expect(prompt).toMatch(/Create 7 AI-300 product-id items/);
-    expect(prompt).toMatch(/Domain: networking/);
-    expect(prompt).toMatch(/Topic: bastion/);
+    expect(prompt).toMatch(/Create 7 AI-300 code-review items/);
+    expect(prompt).toMatch(/Domain: genai-quality/);
+    expect(prompt).toMatch(/Topic: evaluation-metrics/);
     expect(prompt).toMatch(/Difficulty: 3/);
     expect(prompt).toMatch(/00000000-0000-4000-8000-000000000001/);
   });

@@ -44,14 +44,23 @@ for (const [letter, text] of Object.entries(mc.options)) console.log(`  ${letter
 console.log('Correct:', mc.correct);
 console.log('Why:', mc.explanation);
 
-const { data: pid } = await client
+const { data: cr } = await client
   .from('questions')
   .select('topic, content')
-  .eq('type', 'product-id')
+  .eq('type', 'code-review')
   .eq('domain', 'ml-lifecycle')
   .limit(1)
   .single();
-console.log('\n=== Sample product-ID (storage) ===');
-const p = pid!.content as { service_name: string; category: string; description: string };
-console.log('Service:', p.service_name, '/', 'Category:', p.category);
-console.log('Description:', p.description);
+console.log('\n=== Sample code-review (ml-lifecycle) ===');
+const c = cr!.content as {
+  sub_mode: string;
+  language: string;
+  snippet: string;
+  prompt: string;
+  options: Record<string, string>;
+  correct: string;
+  explanation: string;
+};
+console.log('Sub-mode:', c.sub_mode, '/', 'Language:', c.language);
+console.log('Prompt:', c.prompt);
+console.log('Correct:', c.correct);

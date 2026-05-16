@@ -10,7 +10,7 @@ const CONTRACTS_DIR = resolve(HERE, '..', '..', '..', 'specs', '001-supabase-sch
 const SCHEMA_FILES = {
   flashcard: 'flashcard.schema.json',
   mcq: 'mcq.schema.json',
-  'product-id': 'product-id.schema.json',
+  'code-review': 'code-review.schema.json',
 } as const;
 
 export type ItemType = keyof typeof SCHEMA_FILES;

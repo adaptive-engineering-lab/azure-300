@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const CONTENT_DIR = resolve(HERE, '..', '..', '..', 'supabase', 'seed', 'content');
 
-const FILES = ['flashcards.json', 'mcq.json', 'product-id.json'] as const;
+const FILES = ['flashcards.json', 'mcq.json', 'code-review.json'] as const;
 
 export async function listExistingIds(): Promise<string[]> {
   const ids: string[] = [];

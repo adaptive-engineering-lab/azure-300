@@ -9,7 +9,7 @@ const CONTENT_DIR = resolve(HERE, '..', '..', '..', 'supabase', 'seed', 'content
 const FILES: Record<ItemType, string> = {
   flashcard: 'flashcards.json',
   mcq: 'mcq.json',
-  'product-id': 'product-id.json',
+  'code-review': 'code-review.json',
 };
 
 export interface PromoteArgs {
@@ -37,7 +37,7 @@ export async function promoteDraft({ draftPath, reviewer, now }: PromoteArgs): P
   const stamped: Record<ItemType, Array<Record<string, unknown>>> = {
     flashcard: [],
     mcq: [],
-    'product-id': [],
+    'code-review': [],
   };
 
   // Re-validate every item before any write (atomic).
@@ -63,7 +63,7 @@ export async function promoteDraft({ draftPath, reviewer, now }: PromoteArgs): P
   }
 
   // All valid — append to seed files.
-  const appended: PromoteReport['appended'] = { flashcard: 0, mcq: 0, 'product-id': 0 };
+  const appended: PromoteReport['appended'] = { flashcard: 0, mcq: 0, 'code-review': 0 };
   for (const type of Object.keys(FILES) as ItemType[]) {
     if (stamped[type].length === 0) continue;
     const path = resolve(CONTENT_DIR, FILES[type]);

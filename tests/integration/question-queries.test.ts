@@ -4,7 +4,7 @@ import { anonClient } from '../../tools/test-helpers/clients.js';
 describe('Question queries — anonymous, filtered reads (T011 / FR-013, US1 acceptance)', () => {
   const client = anonClient();
 
-  it('Scenario 1: Networking domain returns at least one item of each type with complete metadata', async () => {
+  it('Scenario 1: genai-quality domain returns at least one item of each type with complete metadata', async () => {
     const { data, error } = await client
       .from('questions')
       .select('id, type, domain, topic, difficulty, source, content')
@@ -15,7 +15,7 @@ describe('Question queries — anonymous, filtered reads (T011 / FR-013, US1 acc
     const types = new Set(rows.map((r) => r.type));
     expect(types.has('flashcard')).toBe(true);
     expect(types.has('mcq')).toBe(true);
-    expect(types.has('product-id')).toBe(true);
+    expect(types.has('code-review')).toBe(true);
     for (const row of rows) {
       expect(row.id, 'id present').toBeTruthy();
       expect(row.topic, 'topic present').toBeTruthy();
@@ -45,11 +45,15 @@ describe('Question queries — anonymous, filtered reads (T011 / FR-013, US1 acc
       const c = row!.content as Record<string, unknown>;
       expect(c.front).toBeTruthy();
       expect(c.back).toBeTruthy();
-    } else if (row!.type === 'product-id') {
+    } else if (row!.type === 'code-review') {
       const c = row!.content as Record<string, unknown>;
-      expect(c.service_name).toBeTruthy();
-      expect(c.category).toBeTruthy();
-      expect(c.description).toBeTruthy();
+      expect(c.sub_mode).toBeTruthy();
+      expect(c.language).toBeTruthy();
+      expect(c.snippet).toBeTruthy();
+      expect(c.prompt).toBeTruthy();
+      expect(c.options).toBeTruthy();
+      expect(c.correct).toMatch(/^[A-D]$/);
+      expect(c.explanation).toBeTruthy();
     }
   });
 
@@ -57,7 +61,7 @@ describe('Question queries — anonymous, filtered reads (T011 / FR-013, US1 acc
     const { data } = await client.from('questions').select('domain, type');
     const rows = (data ?? []) as Array<{ domain: string; type: string }>;
     const domains = ['mlops-infra', 'ml-lifecycle', 'genaiops-infra', 'genai-quality', 'genai-optimization'];
-    const types = ['flashcard', 'mcq', 'product-id'];
+    const types = ['flashcard', 'mcq', 'code-review'];
     for (const d of domains) {
       for (const t of types) {
         expect(
