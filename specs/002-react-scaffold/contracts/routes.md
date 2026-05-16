@@ -10,7 +10,7 @@ The canonical route paths exposed by the React app. Defined in code at `frontend
 | `/learn` | `LearnIndexPage` | Implemented | Mode selector with three `ModeCard`s. |
 | `/learn/flashcards` | `FlashcardsPlaceholderPage` | Placeholder | "Coming soon" explanation. Becomes the real flow in feature 004. |
 | `/learn/quiz` | `QuizPlaceholderPage` | Placeholder | Becomes feature 005. |
-| `/learn/product-id` | `ProductIdPlaceholderPage` | Placeholder | Becomes feature 006. |
+| `/learn/code-review` | `CodeReviewPlaceholderPage` | Placeholder | Becomes feature 006. |
 | `/progress` | `ProgressPage` | Implemented (empty-state only) | Renders zero-state for new visitors; future features 007/008 layer in content. |
 | `/settings` | `SettingsPage` | Implemented (theme + session length only) | Future features add Sign-in (003), Billing (011), Exam-day countdown (011), etc. |
 

@@ -5,7 +5,7 @@
 
 ## Summary
 
-Stand up the entire React frontend skeleton: Vite + TypeScript build, Tailwind + shadcn/ui styling, React Router v6 navigation across `/`, `/learn`, `/learn/{flashcards|quiz|product-id}`, `/progress`, `/settings`, and a Zustand state store whose progress and session shapes mirror feature 001's authenticated tables for clean future migration. State persists to `localStorage` under a versioned, namespaced key. Dark mode is the default with a FOUC-free apply pass. Mode routes render "coming soon" placeholders that explain the future modes without crashing. No Supabase reads or writes in this feature — that arrives with feature 003.
+Stand up the entire React frontend skeleton: Vite + TypeScript build, Tailwind + shadcn/ui styling, React Router v6 navigation across `/`, `/learn`, `/learn/{flashcards|quiz|code-review}`, `/progress`, `/settings`, and a Zustand state store whose progress and session shapes mirror feature 001's authenticated tables for clean future migration. State persists to `localStorage` under a versioned, namespaced key. Dark mode is the default with a FOUC-free apply pass. Mode routes render "coming soon" placeholders that explain the future modes without crashing. No Supabase reads or writes in this feature — that arrives with feature 003.
 
 ## Technical Context
 
@@ -94,7 +94,7 @@ frontend/
     │   ├── LearnIndexPage.tsx
     │   ├── FlashcardsPlaceholderPage.tsx
     │   ├── QuizPlaceholderPage.tsx
-    │   ├── ProductIdPlaceholderPage.tsx
+    │   ├── CodeReviewPlaceholderPage.tsx
     │   ├── ProgressPage.tsx
     │   └── SettingsPage.tsx
     └── components/

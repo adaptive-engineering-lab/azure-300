@@ -68,7 +68,7 @@ Per-question progress entries written by a guest learner conform to the same JSO
 ### Functional Requirements
 
 - **FR-001**: The app MUST serve a home route (`/`) that renders a landing screen with the product name, a one-sentence value statement, current streak and XP indicators, and a single primary CTA.
-- **FR-002**: The app MUST expose at least the following routes, each of which renders without error on first visit: `/`, `/learn`, `/learn/flashcards`, `/learn/quiz`, `/learn/product-id`, `/progress`, `/settings`.
+- **FR-002**: The app MUST expose at least the following routes, each of which renders without error on first visit: `/`, `/learn`, `/learn/flashcards`, `/learn/quiz`, `/learn/code-review`, `/progress`, `/settings`.
 - **FR-003**: Game-mode routes that are not yet implemented MUST render an explicit "coming soon" placeholder rather than crashing or 404-ing.
 - **FR-004**: In-app navigation between routes MUST be reflected in the URL and MUST preserve browser history (back/forward work).
 - **FR-005**: The app MUST be mobile-first: it MUST render correctly at 375px width and degrade gracefully down to 320px width.
