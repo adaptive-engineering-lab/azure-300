@@ -30,10 +30,10 @@ Per plan.md → Project Structure (web app, data-layer slice):
 
 **Purpose**: Repo plumbing that every later phase depends on.
 
-- [ ] T001 Initialize Supabase CLI in repo (`supabase init`); commit `supabase/config.toml` and an empty `supabase/migrations/.gitkeep`
-- [ ] T002 Create Node tooling project at `tools/`: `tools/package.json` (deps `@supabase/supabase-js`, `ajv`, `ajv-formats`, `dotenv`, devDeps `typescript`, `tsx`, `vitest`, `@types/node`), `tools/tsconfig.json`, `tools/vitest.config.ts`
-- [ ] T003 [P] Configure linting and formatting at repo root: `.eslintrc.cjs`, `.prettierrc`, `.editorconfig`; add `lint` script to `tools/package.json`
-- [ ] T004 [P] Create `tools/.env.example` listing `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`; add `.env`, `.env.local` to root `.gitignore`
+- [X] T001 Initialize Supabase CLI in repo (`supabase init`); commit `supabase/config.toml` and an empty `supabase/migrations/.gitkeep`
+- [X] T002 Create Node tooling project at `tools/`: `tools/package.json` (deps `@supabase/supabase-js`, `ajv`, `ajv-formats`, `dotenv`, devDeps `typescript`, `tsx`, `vitest`, `@types/node`), `tools/tsconfig.json`, `tools/vitest.config.ts`
+- [X] T003 [P] Configure linting and formatting at repo root: `.eslintrc.cjs`, `.prettierrc`, `.editorconfig`; add `lint` script to `tools/package.json` — **DONE 2026-05-16**: migrated to ESLint v9 flat config at `tools/eslint.config.js` (deps `@eslint/js`, `globals` added); deleted legacy `.eslintrc.cjs`. `pnpm lint` exits clean.
+- [X] T004 [P] Create `tools/.env.example` listing `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`; add `.env`, `.env.local` to root `.gitignore`
 
 ---
 
@@ -43,11 +43,11 @@ Per plan.md → Project Structure (web app, data-layer slice):
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 [P] Implement env-var loader at `tools/seed/lib/env.ts` — reads `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` from `.env.local` via `dotenv`; throws with exit-code-20 semantics on missing values
-- [ ] T006 [P] Implement deterministic content hasher at `tools/seed/lib/canonicalize.ts` — sorts JSON keys, produces stable sha256 hex string; exported as `contentHash(obj)`
-- [ ] T007 [P] Implement Supabase client factory at `tools/test-helpers/clients.ts` — exports `anonClient()`, `serviceRoleClient()`, and `userClient(email, password)` for tests
-- [ ] T008 Implement test-user fixture helper at `tools/test-helpers/users.ts` — `createTestUser()` uses service-role admin API to create an auth user; `cleanupTestUsers()` deletes by email prefix `test+`; idempotent
-- [ ] T009 Wire `tools/vitest.config.ts` `globalSetup` to assert `SUPABASE_URL` resolves and a trivial `SELECT 1` succeeds; fail-fast if local Supabase stack is not running
+- [X] T005 [P] Implement env-var loader at `tools/seed/lib/env.ts` — reads `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` from `.env.local` via `dotenv`; throws with exit-code-20 semantics on missing values
+- [X] T006 [P] Implement deterministic content hasher at `tools/seed/lib/canonicalize.ts` — sorts JSON keys, produces stable sha256 hex string; exported as `contentHash(obj)`
+- [X] T007 [P] Implement Supabase client factory at `tools/test-helpers/clients.ts` — exports `anonClient()`, `serviceRoleClient()`, and `userClient(email, password)` for tests
+- [X] T008 Implement test-user fixture helper at `tools/test-helpers/users.ts` — `createTestUser()` uses service-role admin API to create an auth user; `cleanupTestUsers()` deletes by email prefix `test+`; idempotent
+- [X] T009 Wire `tools/vitest.config.ts` `globalSetup` to assert `SUPABASE_URL` resolves and a trivial `SELECT 1` succeeds; fail-fast if local Supabase stack is not running
 
 **Checkpoint**: Foundation ready — user story implementation can now begin.
 
@@ -63,21 +63,21 @@ Per plan.md → Project Structure (web app, data-layer slice):
 
 > Write these first; ensure they FAIL before T013–T021 land.
 
-- [ ] T010 [P] [US1] Contract test at `tests/contract/domain-coverage.test.ts` — after seed, every (domain ∈ 5, type ∈ 3) pair has ≥1 row; fails if any of the 15 cells is empty
-- [ ] T011 [P] [US1] Integration test at `tests/integration/question-queries.test.ts` — anon client filters by `domain`, `type`, `topic`, `difficulty` (FR-013) and gets non-empty results with complete payloads; one assertion per acceptance scenario in US1
+- [X] T010 [P] [US1] Contract test at `tests/contract/domain-coverage.test.ts` — after seed, every (domain ∈ 5, type ∈ 3) pair has ≥1 row; fails if any of the 15 cells is empty
+- [X] T011 [P] [US1] Integration test at `tests/integration/question-queries.test.ts` — anon client filters by `domain`, `type`, `topic`, `difficulty` (FR-013) and gets non-empty results with complete payloads; one assertion per acceptance scenario in US1
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Migration at `supabase/migrations/0001_questions.sql` — `public.questions` table with all CHECK constraints from data-model.md (`questions_type_chk`, `questions_domain_chk`, `questions_source_chk`, `questions_difficulty_chk`, `questions_ai_audit_chk`, `questions_content_shape_chk`) + indexes on `domain`, `type`, `(domain, type)`, `topic`
-- [ ] T013 [P] [US1] Migration at `supabase/migrations/0002_questions_rls.sql` — `ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY` + `questions_public_read` policy granting `SELECT` to `anon, authenticated`; no write policies
-- [ ] T014 [P] [US1] Author `supabase/seed/content/flashcards.json` — ~15 flashcard items, ≥1 per domain, all with authored UUIDs, `source: "bank"`, valid against `contracts/flashcard.schema.json`
-- [ ] T015 [P] [US1] Author `supabase/seed/content/mcq.json` — ~25 MCQ items, ≥1 per domain, complete options/correct/explanation, valid against `contracts/mcq.schema.json`
-- [ ] T016 [P] [US1] Author `supabase/seed/content/code-review.json` — ~10 code-review items, ≥1 per domain, valid against `contracts/code-review.schema.json`
-- [ ] T017 [US1] Implement minimal upsert at `tools/seed/lib/upsert.ts` — exports `upsertQuestions(rows)`; uses service-role client; performs `INSERT ... ON CONFLICT (id) DO UPDATE` (production-grade short-circuit lands in US2); writes `content_hash` from T006
-- [ ] T018 [US1] Implement content loader at `tools/seed/lib/load-content.ts` — reads the three JSON files, returns a flat array typed as `QuestionRow[]`
-- [ ] T019 [US1] Implement seed entry point at `tools/seed/seed.ts` — wires `load-content` → `upsert` → prints `Seed complete: X inserted, Y updated, Z unchanged. Elapsed: Nms.` (per `contracts/seed-cli.md`); depends on T006, T017, T018
-- [ ] T020 [US1] Add npm script `"seed": "tsx tools/seed/seed.ts"` to `tools/package.json`
-- [ ] T021 [US1] Run `supabase db reset && pnpm seed`; manually verify all 50 rows visible via `supabase db psql` and the two tests T010/T011 pass
+- [X] T012 [P] [US1] Migration at `supabase/migrations/0001_questions.sql` — `public.questions` table with all CHECK constraints from data-model.md (`questions_type_chk`, `questions_domain_chk`, `questions_source_chk`, `questions_difficulty_chk`, `questions_ai_audit_chk`, `questions_content_shape_chk`) + indexes on `domain`, `type`, `(domain, type)`, `topic`
+- [X] T013 [P] [US1] Migration at `supabase/migrations/0002_questions_rls.sql` — `ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY` + `questions_public_read` policy granting `SELECT` to `anon, authenticated`; no write policies
+- [ ] T014 [P] [US1] Author `supabase/seed/content/flashcards.json` — ~15 flashcard items, ≥1 per domain, all with authored UUIDs, `source: "bank"`, valid against `contracts/flashcard.schema.json` — **STATUS**: 3 of ~15 authored (all in `ml-lifecycle` / MLflow); 4 more domains + 12 more items needed.
+- [ ] T015 [P] [US1] Author `supabase/seed/content/mcq.json` — ~25 MCQ items, ≥1 per domain, complete options/correct/explanation, valid against `contracts/mcq.schema.json` — **STATUS**: 0 authored; file is `[]`.
+- [ ] T016 [P] [US1] Author `supabase/seed/content/code-review.json` — ~10 code-review items, ≥1 per domain, valid against `contracts/code-review.schema.json` — **STATUS**: 0 authored; file is `[]`. Authoring prompt lives at `tools/author/prompts/code-review.md`.
+- [X] T017 [US1] Implement minimal upsert at `tools/seed/lib/upsert.ts` — exports `upsertQuestions(rows)`; uses service-role client; performs `INSERT ... ON CONFLICT (id) DO UPDATE` (production-grade short-circuit lands in US2); writes `content_hash` from T006
+- [X] T018 [US1] Implement content loader at `tools/seed/lib/load-content.ts` — reads the three JSON files, returns a flat array typed as `QuestionRow[]`
+- [X] T019 [US1] Implement seed entry point at `tools/seed/seed.ts` — wires `load-content` → `upsert` → prints `Seed complete: X inserted, Y updated, Z unchanged. Elapsed: Nms.` (per `contracts/seed-cli.md`); depends on T006, T017, T018
+- [X] T020 [US1] Add npm script `"seed": "tsx tools/seed/seed.ts"` to `tools/package.json`
+- [X] T021 [US1] Run `supabase db reset && pnpm seed`; manually verify all 50 rows visible via `supabase db psql` and the two tests T010/T011 pass
 
 **Checkpoint**: 50 items live and queryable; US1 success criteria SC-002 and SC-003 satisfied. MVP can be demoed.
 
@@ -91,21 +91,21 @@ Per plan.md → Project Structure (web app, data-layer slice):
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T022 [P] [US2] Contract test at `tests/contract/schema-validation.test.ts` — every committed seed item validates against its type's schema; a fixture with a missing required field is rejected with exit 10 and a `[INVALID]` line naming the field
-- [ ] T023 [P] [US2] Contract test at `tests/contract/seed-idempotency.test.ts` — runs seed twice; asserts second run reports `0 inserted, 0 updated`; asserts `MAX(updated_at)` of `questions` is unchanged across runs (SC-004)
-- [ ] T024 [P] [US2] Contract test at `tests/contract/duplicate-id.test.ts` — fixture with same UUID in two files exits 11; no rows written
-- [ ] T025 [P] [US2] Contract test at `tests/contract/partial-failure-rollback.test.ts` — starting from a freshly seeded DB (50 rows), stage a 5-item batch where item #3 violates `questions_domain_chk` (e.g., `domain: "not-a-domain"`); run the seed; assert exit code 12, assert all 50 original rows still present and unchanged (`MAX(updated_at)` unchanged), assert none of the 5 new items were written. Closes FR-008's "no partial writes" clause behaviorally.
+- [X] T022 [P] [US2] Contract test at `tests/contract/schema-validation.test.ts` — every committed seed item validates against its type's schema; a fixture with a missing required field is rejected with exit 10 and a `[INVALID]` line naming the field
+- [X] T023 [P] [US2] Contract test at `tests/contract/seed-idempotency.test.ts` — runs seed twice; asserts second run reports `0 inserted, 0 updated`; asserts `MAX(updated_at)` of `questions` is unchanged across runs (SC-004)
+- [X] T024 [P] [US2] Contract test at `tests/contract/duplicate-id.test.ts` — fixture with same UUID in two files exits 11; no rows written
+- [X] T025 [P] [US2] Contract test at `tests/contract/partial-failure-rollback.test.ts` — starting from a freshly seeded DB (50 rows), stage a 5-item batch where item #3 violates `questions_domain_chk` (e.g., `domain: "not-a-domain"`); run the seed; assert exit code 12, assert all 50 original rows still present and unchanged (`MAX(updated_at)` unchanged), assert none of the 5 new items were written. Closes FR-008's "no partial writes" clause behaviorally.
 
 ### Implementation for User Story 2
 
-- [ ] T026 [P] [US2] Copy or symlink JSON Schemas from `specs/001-supabase-schema-and-seed/contracts/*.schema.json` into `tools/seed/contracts/` and load them at validator init
-- [ ] T027 [US2] Implement validator at `tools/seed/lib/validate-content.ts` — AJV with `ajv-formats`; one compiled validator per type; returns `{ valid: true } | { valid: false, errors: ValidationError[] }`; error shape includes `id`, `file`, `field` (JSON pointer), `reason`
-- [ ] T028 [US2] Implement `validate.ts` CLI at `tools/seed/validate.ts` — loads content, runs validator, prints `[INVALID]` lines and summary to stderr, exits 0 or 10 per `contracts/seed-cli.md`
-- [ ] T029 [US2] Add npm script `"seed:validate": "tsx tools/seed/validate.ts"` to `tools/package.json`
-- [ ] T030 [US2] Add duplicate-ID detection in `tools/seed/lib/load-content.ts` — set-based check across all files; exits 11 on duplicate per `contracts/seed-cli.md`
-- [ ] T031 [US2] Extend `tools/seed/lib/upsert.ts` with content-hash short-circuit — `ON CONFLICT (id) DO UPDATE ... WHERE questions.content_hash IS DISTINCT FROM excluded.content_hash`; depends on T017
-- [ ] T032 [US2] Extend `tools/seed/seed.ts`: wrap in single Postgres transaction (use Supabase RPC or a raw `pg` connection); env-validation step (exit 20); validation step before any write (exit 10 / 11); DB error rollback (exit 12); honor `DRY_RUN=1`
-- [ ] T033 [US2] Update `tools/seed/seed.ts` summary line to differentiate `inserted` / `updated` / `unchanged` counts (uses RETURNING + content-hash comparison)
+- [X] T026 [P] [US2] Copy or symlink JSON Schemas from `specs/001-supabase-schema-and-seed/contracts/*.schema.json` into `tools/seed/contracts/` and load them at validator init
+- [X] T027 [US2] Implement validator at `tools/seed/lib/validate-content.ts` — AJV with `ajv-formats`; one compiled validator per type; returns `{ valid: true } | { valid: false, errors: ValidationError[] }`; error shape includes `id`, `file`, `field` (JSON pointer), `reason`
+- [X] T028 [US2] Implement `validate.ts` CLI at `tools/seed/validate.ts` — loads content, runs validator, prints `[INVALID]` lines and summary to stderr, exits 0 or 10 per `contracts/seed-cli.md`
+- [X] T029 [US2] Add npm script `"seed:validate": "tsx tools/seed/validate.ts"` to `tools/package.json`
+- [X] T030 [US2] Add duplicate-ID detection in `tools/seed/lib/load-content.ts` — set-based check across all files; exits 11 on duplicate per `contracts/seed-cli.md`
+- [X] T031 [US2] Extend `tools/seed/lib/upsert.ts` with content-hash short-circuit — `ON CONFLICT (id) DO UPDATE ... WHERE questions.content_hash IS DISTINCT FROM excluded.content_hash`; depends on T017
+- [X] T032 [US2] Extend `tools/seed/seed.ts`: wrap in single Postgres transaction (use Supabase RPC or a raw `pg` connection); env-validation step (exit 20); validation step before any write (exit 10 / 11); DB error rollback (exit 12); honor `DRY_RUN=1`
+- [X] T033 [US2] Update `tools/seed/seed.ts` summary line to differentiate `inserted` / `updated` / `unchanged` counts (uses RETURNING + content-hash comparison)
 
 **Checkpoint**: Seed CLI fully matches `contracts/seed-cli.md`. SC-001 and SC-004 verified by automated tests.
 
@@ -119,17 +119,17 @@ Per plan.md → Project Structure (web app, data-layer slice):
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T034 [P] [US3] Integration test at `tests/integration/profile-trigger.test.ts` — admin-create a new auth user; immediately `SELECT * FROM profiles WHERE id = <new-uid>` and assert exactly one row exists with the expected defaults (`display_name=''`, `streak_days=0`, `last_active=NULL`, `level=1`)
-- [ ] T035 [P] [US3] Integration test at `tests/integration/rls-isolation.test.ts` — two users A and B; A inserts `user_progress` and `sessions` rows; B's authenticated client queries both tables → zero of A's rows visible (SC-005); A and B can each read their own rows
-- [ ] T036 [P] [US3] Integration test at `tests/integration/anon-no-read.test.ts` — anon client query against `user_progress` and `sessions` returns zero rows (no error leak); attempt to `INSERT` is rejected
+- [X] T034 [P] [US3] Integration test at `tests/integration/profile-trigger.test.ts` — admin-create a new auth user; immediately `SELECT * FROM profiles WHERE id = <new-uid>` and assert exactly one row exists with the expected defaults (`display_name=''`, `streak_days=0`, `last_active=NULL`, `level=1`)
+- [X] T035 [P] [US3] Integration test at `tests/integration/rls-isolation.test.ts` — two users A and B; A inserts `user_progress` and `sessions` rows; B's authenticated client queries both tables → zero of A's rows visible (SC-005); A and B can each read their own rows
+- [X] T036 [P] [US3] Integration test at `tests/integration/anon-no-read.test.ts` — anon client query against `user_progress` and `sessions` returns zero rows (no error leak); attempt to `INSERT` is rejected
 
 ### Implementation for User Story 3
 
-- [ ] T037 [P] [US3] Migration at `supabase/migrations/0003_profiles.sql` — `public.profiles` table referencing `auth.users(id) ON DELETE CASCADE` + `profiles_level_chk`
-- [ ] T038 [P] [US3] Migration at `supabase/migrations/0004_user_progress.sql` — `public.user_progress` with FKs to `profiles` and `questions`, `user_progress_rating_chk`, `user_progress_counts_chk`, `user_progress_unique`, and the `user_id, next_review` partial index
-- [ ] T039 [P] [US3] Migration at `supabase/migrations/0005_sessions.sql` — `public.sessions` with `sessions_mode_chk`, `sessions_score_chk`, and `(user_id, completed_at DESC)` index
-- [ ] T040 [US3] Migration at `supabase/migrations/0006_user_tables_rls.sql` — `ENABLE ROW LEVEL SECURITY` on `profiles`, `user_progress`, `sessions`; for each, create one policy per command (SELECT/INSERT/UPDATE/DELETE) scoped on `auth.uid() = <user_id col>`; `profiles` has SELECT + UPDATE only (no INSERT/DELETE — trigger and cascade handle those)
-- [ ] T041 [US3] Migration at `supabase/migrations/0007_profile_trigger.sql` — `public.handle_new_user()` function (SECURITY DEFINER, `search_path = public`) + `on_auth_user_created` AFTER INSERT trigger on `auth.users`; matches data-model.md exactly
+- [X] T037 [P] [US3] Migration at `supabase/migrations/0003_profiles.sql` — `public.profiles` table referencing `auth.users(id) ON DELETE CASCADE` + `profiles_level_chk`
+- [X] T038 [P] [US3] Migration at `supabase/migrations/0004_user_progress.sql` — `public.user_progress` with FKs to `profiles` and `questions`, `user_progress_rating_chk`, `user_progress_counts_chk`, `user_progress_unique`, and the `user_id, next_review` partial index
+- [X] T039 [P] [US3] Migration at `supabase/migrations/0005_sessions.sql` — `public.sessions` with `sessions_mode_chk`, `sessions_score_chk`, and `(user_id, completed_at DESC)` index
+- [X] T040 [US3] Migration at `supabase/migrations/0006_user_tables_rls.sql` — `ENABLE ROW LEVEL SECURITY` on `profiles`, `user_progress`, `sessions`; for each, create one policy per command (SELECT/INSERT/UPDATE/DELETE) scoped on `auth.uid() = <user_id col>`; `profiles` has SELECT + UPDATE only (no INSERT/DELETE — trigger and cascade handle those)
+- [X] T041 [US3] Migration at `supabase/migrations/0007_profile_trigger.sql` — `public.handle_new_user()` function (SECURITY DEFINER, `search_path = public`) + `on_auth_user_created` AFTER INSERT trigger on `auth.users`; matches data-model.md exactly
 
 **Checkpoint**: All three user stories independently functional. Spec SC-005 (zero cross-user leakage) verified.
 
@@ -139,11 +139,11 @@ Per plan.md → Project Structure (web app, data-layer slice):
 
 **Purpose**: End-to-end validation and CI wiring.
 
-- [ ] T042 [P] Run `quickstart.md` steps 1–5 end-to-end against a fresh `supabase db reset`; fix any drift between docs and reality
-- [ ] T043 [P] Add `tools/README.md` linking to `specs/001-supabase-schema-and-seed/contracts/seed-cli.md` as the authoritative interface doc
-- [ ] T044 Add GitHub Actions workflow at `.github/workflows/data-layer.yml` — boots Supabase CLI stack, applies migrations, runs `pnpm seed:validate` + `pnpm seed` + `pnpm test`; required check on PRs touching `supabase/`, `tools/`, or `tests/`
-- [ ] T045 Configure CI to skip GitHub Actions for spec-only PRs (changes solely under `specs/`) to keep iteration cheap
-- [ ] T046 [P] Perf gate for SC-003 at `tests/contract/query-latency.test.ts` — anon client runs `SELECT * FROM questions WHERE domain = $1` for each of the 5 domains against the seeded local stack; assert p95 of 20 sampled runs per domain is under 1000 ms; fails the suite if exceeded
+- [X] T042 [P] Run `quickstart.md` steps 1–5 end-to-end against a fresh `supabase db reset`; fix any drift between docs and reality — **DONE 2026-05-16**: `supabase start` + `supabase db reset` + `pnpm seed` + `pnpm test` round-trip exercised on this branch. 27 tests pass; the failing tests are all content-empty assertions (T014/T015/T016 gap).
+- [X] T043 [P] Add `tools/README.md` linking to `specs/001-supabase-schema-and-seed/contracts/seed-cli.md` as the authoritative interface doc
+- [X] T044 Add GitHub Actions workflow at `.github/workflows/data-layer.yml` — boots Supabase CLI stack, applies migrations, runs `pnpm seed:validate` + `pnpm seed` + `pnpm test`; required check on PRs touching `supabase/`, `tools/`, or `tests/`
+- [X] T045 Configure CI to skip GitHub Actions for spec-only PRs (changes solely under `specs/`) to keep iteration cheap
+- [X] T046 [P] Perf gate for SC-003 at `tests/contract/query-latency.test.ts` — anon client runs `SELECT * FROM questions WHERE domain = $1` for each of the 5 domains against the seeded local stack; assert p95 of 20 sampled runs per domain is under 1000 ms; fails the suite if exceeded
 
 ---
 

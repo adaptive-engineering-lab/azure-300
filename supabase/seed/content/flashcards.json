@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "id": "11111111-1111-4111-8111-000000000001",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "MLflow",
+    "difficulty": 1,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "mlflow", "level-1"],
+    "content": {
+      "front": "What does `mlflow.autolog()` do?",
+      "back": "Enables automatic logging of metrics, parameters, model artifacts, and tags from supported ML frameworks (scikit-learn, XGBoost, PyTorch, TensorFlow, etc.). It MUST be called BEFORE training (`model.fit`), not after — calls placed after `fit` capture nothing for the just-finished run."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000002",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "MLflow",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "mlflow", "level-2"],
+    "content": {
+      "front": "On an Azure ML compute instance, do you need to call `mlflow.set_tracking_uri(...)` before logging?",
+      "back": "No. Azure ML compute instances and compute clusters auto-configure the MLflow tracking URI to the workspace's built-in tracking store, so MLflow calls write to the workspace without further setup. You only need `set_tracking_uri` when running outside Azure ML compute (e.g., a local laptop pointing at the same workspace)."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000003",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "MLflow",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "mlflow", "level-2"],
+    "content": {
+      "front": "What is the difference between an MLflow experiment and an MLflow run?",
+      "back": "An experiment is a named container that groups related runs (e.g., `churn-prediction-v1`). A run is a single execution within an experiment, capturing metrics, parameters, artifacts, and tags. Many runs roll up into one experiment so you can compare hyperparameter sweeps, training variants, or fine-tunes side by side."
+    }
+  }
+]
