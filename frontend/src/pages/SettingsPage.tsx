@@ -118,9 +118,17 @@ function AccountSection({ email, onSignOut }: { email: string; onSignOut: () => 
   async function deleteAccount() {
     if (confirmText !== 'DELETE') return;
     setDeleting(true);
-    // Best-effort: remove profile + cascading rows. Auth user deletion requires an admin
-    // call (out of scope for client) — sign the user out and inform them.
-    await supabase().from('profiles').delete().neq('id', '');
+    // Calls the SECURITY DEFINER RPC from 0013_delete_self_account.sql:
+    // it deletes auth.users where id = auth.uid(), and the cascade FKs
+    // from features 001 + 003 remove profile / progress / sessions /
+    // subscriptions / admins rows automatically. We sign out after to
+    // clear the local session.
+    const { error } = await supabase().rpc('delete_self_account');
+    if (error) {
+      setDeleting(false);
+      setStatus('error');
+      return;
+    }
     await onSignOut();
   }
 
