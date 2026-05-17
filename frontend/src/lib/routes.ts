@@ -3,7 +3,7 @@ export const ROUTES = {
   learn: '/learn',
   flashcards: '/learn/flashcards',
   quiz: '/learn/quiz',
-  productId: '/learn/product-id',
+  codeReview: '/learn/code-review',
   progress: '/progress',
   settings: '/settings',
   signIn: '/sign-in',

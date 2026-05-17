@@ -45,7 +45,7 @@ import HomePage from '../../src/pages/HomePage';
 import LearnIndexPage from '../../src/pages/LearnIndexPage';
 import FlashcardSelectPage from '../../src/pages/FlashcardSelectPage';
 import QuizSelectPage from '../../src/pages/QuizSelectPage';
-import ProductIdPage from '../../src/pages/ProductIdPage';
+import CodeReviewPage from '../../src/pages/CodeReviewPage';
 import ProgressPage from '../../src/pages/ProgressPage';
 import SettingsPage from '../../src/pages/SettingsPage';
 
@@ -59,7 +59,7 @@ function renderAt(path: string) {
           { path: ROUTES.learn, element: <LearnIndexPage /> },
           { path: ROUTES.flashcards, element: <FlashcardSelectPage /> },
           { path: ROUTES.quiz, element: <QuizSelectPage /> },
-          { path: ROUTES.productId, element: <ProductIdPage /> },
+          { path: ROUTES.codeReview, element: <CodeReviewPage /> },
           { path: ROUTES.progress, element: <ProgressPage /> },
           { path: ROUTES.settings, element: <SettingsPage /> },
         ],
@@ -91,9 +91,9 @@ describe('Routing (FR-002, FR-003, FR-015)', () => {
     expect(screen.getByText(/Pick a topic/i)).toBeInTheDocument();
   });
 
-  it('renders the product-id page at /learn/product-id', () => {
-    renderAt(ROUTES.productId);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Product ID/i);
+  it('renders the code-review placeholder at /learn/code-review', () => {
+    renderAt(ROUTES.codeReview);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Code Review/i);
   });
 
   it('renders the progress page at /progress', () => {

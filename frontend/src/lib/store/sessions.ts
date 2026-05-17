@@ -1,4 +1,4 @@
-export type SessionMode = 'flashcards' | 'mcq' | 'product-id' | 'daily-review';
+export type SessionMode = 'flashcards' | 'mcq' | 'code-review' | 'daily-review';
 
 export interface GuestSession {
   id: string;

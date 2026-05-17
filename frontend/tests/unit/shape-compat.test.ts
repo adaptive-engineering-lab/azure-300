@@ -43,7 +43,7 @@ describe('Shape compatibility with feature 001 (SC-005)', () => {
   });
 
   it('GuestSession.mode matches the sessions_mode_chk values', () => {
-    const valid: Array<GuestSession['mode']> = ['flashcards', 'mcq', 'product-id', 'daily-review'];
+    const valid: Array<GuestSession['mode']> = ['flashcards', 'mcq', 'code-review', 'daily-review'];
     for (const m of valid) {
       const s: GuestSession = {
         id: '00000000-0000-4000-8000-000000000abc',
