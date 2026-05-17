@@ -1,6 +1,6 @@
 export type Theme = 'dark' | 'light';
 export type SessionLength = 10 | 20 | 30;
-export type GameMode = 'flashcards' | 'mcq' | 'product-id';
+export type GameMode = 'flashcards' | 'mcq' | 'code-review';
 
 export interface SessionPreferences {
   theme: Theme;

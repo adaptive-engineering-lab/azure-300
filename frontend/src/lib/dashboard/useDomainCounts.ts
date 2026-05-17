@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 import { DOMAINS, type Domain } from '../questions/types';
 
-type ItemType = 'flashcard' | 'mcq' | 'product-id';
+type ItemType = 'flashcard' | 'mcq' | 'code-review';
 
 export interface DomainCounts {
   byDomain: Record<Domain, number>;
@@ -14,16 +14,16 @@ export interface DomainCounts {
 
 const EMPTY: Record<Domain, number> = {
   'mlops-infra': 0,
-  storage: 0,
-  compute: 0,
-  networking: 0,
-  monitoring: 0,
+  'ml-lifecycle': 0,
+  'genaiops-infra': 0,
+  'genai-quality': 0,
+  'genai-optimization': 0,
 };
 
 const EMPTY_TYPES: Record<ItemType, number> = {
   flashcard: 0,
   mcq: 0,
-  'product-id': 0,
+  'code-review': 0,
 };
 
 /**

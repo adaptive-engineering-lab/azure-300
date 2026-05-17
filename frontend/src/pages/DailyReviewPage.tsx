@@ -198,17 +198,12 @@ export default function DailyReviewPage() {
           onNext={() => commit(chosen === item.content.correct ? 'correct' : 'missed')}
         />
       )}
-      {item.type === 'product-id' && (
-        <ProductIdCard
-          item={item}
-          chosen={chosen}
-          showFeedback={showFeedback}
-          onPick={(cat) => {
-            setChosen(cat);
-            setShowFeedback(true);
-          }}
-          onNext={() => commit(chosen === item.content.category ? 'correct' : 'missed')}
-        />
+      {item.type === 'code-review' && (
+        // Code-review dispatcher lands with feature 008. The bank has
+        // no code-review items yet, so the branch is a defensive noop.
+        <div className="rounded-lg bg-bg-elevated p-4 text-sm text-fg-muted">
+          Code Review items can't be reviewed yet — coming with feature 008.
+        </div>
       )}
     </section>
   );
@@ -284,76 +279,6 @@ function McqCard({
       {showFeedback && (
         <div className="mt-4 rounded-md bg-bg-elevated p-4">
           <p className="text-sm"><strong>{chosen === correct ? 'Correct.' : 'Not quite.'}</strong> {explanation}</p>
-          <button type="button" onClick={onNext} className="mt-4 w-full rounded-md bg-accent px-4 py-2 font-semibold text-accent-fg">Next</button>
-        </div>
-      )}
-    </>
-  );
-}
-
-function ProductIdCard({
-  item,
-  chosen,
-  showFeedback,
-  onPick,
-  onNext,
-}: {
-  item: Extract<Question, { type: 'product-id' }>;
-  chosen: string | Letter | null;
-  showFeedback: boolean;
-  onPick: (cat: string) => void;
-  onNext: () => void;
-}) {
-  // Reuse the same option-builder behavior as ProductIdPage
-  const categories = ['Networking', 'Security', 'Compute', 'Storage', 'Identity', 'Monitoring', 'Database', 'Integration'];
-  const opts = useMemo(() => {
-    const set = new Set<string>([item.content.category]);
-    for (const conf of item.content.common_confusions ?? []) {
-      if (set.size >= 4) break;
-      const m = categories.find((c) => conf.toLowerCase().includes(c.toLowerCase()));
-      if (m) set.add(m);
-    }
-    const pool = categories.filter((c) => !set.has(c));
-    for (let i = pool.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j]!, pool[i]!];
-    }
-    for (const c of pool) {
-      if (set.size >= 4) break;
-      set.add(c);
-    }
-    const arr = Array.from(set);
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j]!, arr[i]!];
-    }
-    return arr;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item.id]);
-
-  return (
-    <>
-      <div className="rounded-lg bg-bg-elevated p-6 text-center">
-        <p className="text-xs uppercase tracking-wider text-fg-muted">Which category?</p>
-        <h2 className="mt-2 text-2xl font-bold">{item.content.service_name}</h2>
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        {opts.map((cat) => {
-          let cls = 'bg-bg-elevated text-fg';
-          if (showFeedback) {
-            if (cat === item.content.category) cls = 'bg-success/20 text-success ring-1 ring-success';
-            else if (cat === chosen) cls = 'bg-error/20 text-error ring-1 ring-error';
-          }
-          return (
-            <button key={cat} type="button" disabled={showFeedback} onClick={() => onPick(cat)} className={`rounded-md px-3 py-3 text-sm font-medium ${cls}`}>
-              {cat}
-            </button>
-          );
-        })}
-      </div>
-      {showFeedback && (
-        <div className="mt-4 rounded-md bg-bg-elevated p-4">
-          <p className="text-sm"><strong>{chosen === item.content.category ? 'Correct.' : 'Not quite.'}</strong> {item.content.description}</p>
           <button type="button" onClick={onNext} className="mt-4 w-full rounded-md bg-accent px-4 py-2 font-semibold text-accent-fg">Next</button>
         </div>
       )}

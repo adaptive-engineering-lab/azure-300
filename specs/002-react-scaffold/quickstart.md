@@ -32,10 +32,10 @@ Tap or directly visit each:
 | URL | What you should see |
 |---|---|
 | `/` | Streak / XP zero-state, primary CTA, brief value statement. |
-| `/learn` | Three mode cards (Flashcards / Quiz / Product ID). |
+| `/learn` | Three mode cards (Flashcards / Quiz / Code Review). |
 | `/learn/flashcards` | "Coming soon" placeholder with the planned feature description. |
 | `/learn/quiz` | Placeholder. |
-| `/learn/product-id` | Placeholder. |
+| `/learn/code-review` | Placeholder. |
 | `/progress` | Zero-state surface telling the visitor to start a session. |
 | `/settings` | Theme toggle (dark / light), default-session-length picker, reduced-motion toggle. |
 

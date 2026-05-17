@@ -10,7 +10,7 @@ The "data model" for this feature is the in-browser state managed by Zustand and
 interface SessionPreferences {
   theme: 'dark' | 'light';
   defaultSessionLength: 10 | 20 | 30;
-  defaultStartingMode: 'flashcards' | 'mcq' | 'product-id' | null;
+  defaultStartingMode: 'flashcards' | 'mcq' | 'code-review' | null;
   reducedMotion: boolean | 'system'; // 'system' defers to OS setting
 }
 ```
@@ -114,7 +114,7 @@ Mirrors feature 001's `sessions` row, minus `id` (locally a numeric or uuid v4 k
 ```ts
 interface GuestSession {
   id: string;                                                    // uuid v4 generated locally
-  mode: 'flashcards' | 'mcq' | 'product-id' | 'daily-review';
+  mode: 'flashcards' | 'mcq' | 'code-review' | 'daily-review';
   topic: string | null;
   scorePct: number | null;        // 0..100
   durationSeconds: number | null;

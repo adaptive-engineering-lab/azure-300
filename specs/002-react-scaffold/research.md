@@ -89,7 +89,7 @@ No `[NEEDS CLARIFICATION]` markers remain in the spec. This document captures th
 
 ## 6. Route shape and lazy loading
 
-**Decision**: All seven routes (`/`, `/learn`, `/learn/flashcards`, `/learn/quiz`, `/learn/product-id`, `/progress`, `/settings`) declared centrally in `frontend/src/lib/routes.ts`. Page components are lazy-loaded with `React.lazy` so each route's JS chunks off the home payload.
+**Decision**: All seven routes (`/`, `/learn`, `/learn/flashcards`, `/learn/quiz`, `/learn/code-review`, `/progress`, `/settings`) declared centrally in `frontend/src/lib/routes.ts`. Page components are lazy-loaded with `React.lazy` so each route's JS chunks off the home payload.
 
 **Rationale**:
 

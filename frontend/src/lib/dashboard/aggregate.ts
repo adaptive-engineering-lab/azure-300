@@ -21,10 +21,10 @@ export function computeDomainStats(
 ): DomainStat[] {
   const tally: Record<Domain, { seen: number; correct: number }> = {
     'mlops-infra': { seen: 0, correct: 0 },
-    storage: { seen: 0, correct: 0 },
-    compute: { seen: 0, correct: 0 },
-    networking: { seen: 0, correct: 0 },
-    monitoring: { seen: 0, correct: 0 },
+    'ml-lifecycle': { seen: 0, correct: 0 },
+    'genaiops-infra': { seen: 0, correct: 0 },
+    'genai-quality': { seen: 0, correct: 0 },
+    'genai-optimization': { seen: 0, correct: 0 },
   };
   for (const p of Object.values(progress)) {
     const dom = questionDomains[p.questionId];

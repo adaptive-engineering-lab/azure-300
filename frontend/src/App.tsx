@@ -11,7 +11,7 @@ const FlashcardSelectPage = lazy(() => import('./pages/FlashcardSelectPage'));
 const FlashcardSessionPage = lazy(() => import('./pages/FlashcardSessionPage'));
 const QuizSelectPage = lazy(() => import('./pages/QuizSelectPage'));
 const QuizSessionPage = lazy(() => import('./pages/QuizSessionPage'));
-const ProductIdPage = lazy(() => import('./pages/ProductIdPage'));
+const CodeReviewPage = lazy(() => import('./pages/CodeReviewPage'));
 const ProgressPage = lazy(() => import('./pages/ProgressPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const SignInPage = lazy(() => import('./pages/SignInPage'));
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
       { path: `${ROUTES.flashcards}/session`, element: lazyPage(<FlashcardSessionPage />) },
       { path: ROUTES.quiz, element: lazyPage(<QuizSelectPage />) },
       { path: `${ROUTES.quiz}/session`, element: lazyPage(<QuizSessionPage />) },
-      { path: ROUTES.productId, element: lazyPage(<ProductIdPage />) },
+      { path: ROUTES.codeReview, element: lazyPage(<CodeReviewPage />) },
       { path: ROUTES.progress, element: lazyPage(<ProgressPage />) },
       { path: ROUTES.settings, element: lazyPage(<SettingsPage />) },
       { path: ROUTES.signIn, element: lazyPage(<SignInPage />) },

@@ -118,7 +118,7 @@ export default function AdminPage() {
           <option value="all">All types</option>
           <option value="flashcard">Flashcard</option>
           <option value="mcq">MCQ</option>
-          <option value="product-id">Product-ID</option>
+          <option value="code-review">Code Review</option>
         </select>
         <select
           value={filterDomain}
@@ -136,7 +136,7 @@ export default function AdminPage() {
         <div className="ml-auto flex gap-2 text-xs">
           <button type="button" onClick={() => setAddingType('flashcard')} className="rounded-md bg-bg-elevated px-3 py-2">+ Flashcard</button>
           <button type="button" onClick={() => setAddingType('mcq')} className="rounded-md bg-bg-elevated px-3 py-2">+ MCQ</button>
-          <button type="button" onClick={() => setAddingType('product-id')} className="rounded-md bg-bg-elevated px-3 py-2">+ Product-ID</button>
+          <button type="button" onClick={() => setAddingType('code-review')} className="rounded-md bg-bg-elevated px-3 py-2">+ Code Review</button>
         </div>
       </div>
 
@@ -195,7 +195,7 @@ export default function AdminPage() {
 function summary(it: BankItem): string {
   if (it.type === 'flashcard') return (it.content.front as string) ?? '';
   if (it.type === 'mcq') return (it.content.question as string) ?? '';
-  if (it.type === 'product-id') return (it.content.service_name as string) ?? '';
+  if (it.type === 'code-review') return (it.content.prompt as string) ?? '';
   return '';
 }
 
@@ -257,12 +257,8 @@ function EditPanel({
         </>
       )}
 
-      {draft.type === 'product-id' && (
-        <>
-          <Field label="Service name" value={draft.content.service_name as string} onChange={(v) => setContentField('service_name', v)} />
-          <Field label="Category" value={draft.content.category as string} onChange={(v) => setContentField('category', v)} />
-          <Field label="Description" value={draft.content.description as string} onChange={(v) => setContentField('description', v)} multiline />
-        </>
+      {draft.type === 'code-review' && (
+        <CodeReviewFields content={draft.content as Record<string, unknown>} setContentField={setContentField} />
       )}
 
       <Field label="Topic" value={draft.topic} onChange={(v) => setDraft({ ...draft, topic: v })} />
@@ -362,12 +358,8 @@ function NewItemForm({
             <Field label="Explanation" value={draft.content.explanation as string} onChange={(v) => setContentField('explanation', v)} multiline />
           </>
         )}
-        {type === 'product-id' && (
-          <>
-            <Field label="Service name" value={draft.content.service_name as string} onChange={(v) => setContentField('service_name', v)} />
-            <Field label="Category" value={draft.content.category as string} onChange={(v) => setContentField('category', v)} />
-            <Field label="Description" value={draft.content.description as string} onChange={(v) => setContentField('description', v)} multiline />
-          </>
+        {type === 'code-review' && (
+          <CodeReviewFields content={draft.content as Record<string, unknown>} setContentField={setContentField} />
         )}
         <label className="block text-sm">
           <span className="block font-medium text-fg-muted">Domain</span>
@@ -469,11 +461,76 @@ function makeBlank(type: ItemType): NewQuestionInput {
     };
   }
   return {
-    type: 'product-id',
+    type: 'code-review',
     domain: 'ml-lifecycle',
     topic: '',
     difficulty: 1,
     source: 'bank',
-    content: { service_name: '', category: 'Storage', description: '' },
+    content: {
+      sub_mode: 'find-the-bug',
+      language: 'python',
+      snippet: '',
+      prompt: '',
+      options: { A: '', B: '', C: '', D: '' },
+      correct: 'A',
+      explanation: '',
+    },
   };
+}
+
+/**
+ * Form fields for the code-review type. Used by both EditPanel and
+ * NewItemForm. The full editor (with syntax-highlighted snippet preview
+ * and per-sub_mode placeholder rendering) lands with feature 013's
+ * admin-editor revamp — for now this is the minimal field set that
+ * matches code-review.schema.json.
+ */
+function CodeReviewFields({
+  content,
+  setContentField,
+}: {
+  content: Record<string, unknown>;
+  setContentField: (key: string, value: unknown) => void;
+}) {
+  const options = (content.options as Record<string, string>) ?? { A: '', B: '', C: '', D: '' };
+  return (
+    <>
+      <label className="block text-sm">
+        <span className="block font-medium text-fg-muted">Sub-mode</span>
+        <select
+          value={(content.sub_mode as string) ?? 'find-the-bug'}
+          onChange={(e) => setContentField('sub_mode', e.target.value)}
+          className="mt-1 block w-full rounded-md border border-divider bg-bg px-3 py-2 text-fg"
+        >
+          <option value="find-the-bug">find-the-bug</option>
+          <option value="what-does-this-do">what-does-this-do</option>
+          <option value="fill-the-blank">fill-the-blank</option>
+        </select>
+      </label>
+      <label className="block text-sm">
+        <span className="block font-medium text-fg-muted">Language</span>
+        <select
+          value={(content.language as string) ?? 'python'}
+          onChange={(e) => setContentField('language', e.target.value)}
+          className="mt-1 block w-full rounded-md border border-divider bg-bg px-3 py-2 text-fg"
+        >
+          <option value="python">python</option>
+          <option value="yaml">yaml</option>
+          <option value="bash">bash</option>
+        </select>
+      </label>
+      <Field label="Snippet (use \n for newlines, ___BLANK___ for fill-the-blank)" value={(content.snippet as string) ?? ''} onChange={(v) => setContentField('snippet', v)} multiline />
+      <Field label="Prompt (≤ 200 chars)" value={(content.prompt as string) ?? ''} onChange={(v) => setContentField('prompt', v)} />
+      {(['A', 'B', 'C', 'D'] as const).map((letter) => (
+        <Field
+          key={letter}
+          label={`Option ${letter}`}
+          value={options[letter] ?? ''}
+          onChange={(v) => setContentField('options', { ...options, [letter]: v })}
+        />
+      ))}
+      <Field label="Correct (A/B/C/D)" value={(content.correct as string) ?? 'A'} onChange={(v) => setContentField('correct', v.toUpperCase())} />
+      <Field label="Explanation" value={(content.explanation as string) ?? ''} onChange={(v) => setContentField('explanation', v)} multiline />
+    </>
+  );
 }

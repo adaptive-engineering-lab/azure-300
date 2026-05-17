@@ -37,14 +37,22 @@ describe('Admin item validation (feature 013, FR-007)', () => {
   });
 
   it('rejects an item with an unknown domain', () => {
-    const result = validateItem('product-id', {
+    const result = validateItem('code-review', {
       id: '00000000-0000-4000-8000-000000000003',
-      type: 'product-id',
+      type: 'code-review',
       domain: 'not-a-domain',
       topic: 't',
       difficulty: 1,
       source: 'bank',
-      content: { service_name: 'x', category: 'Storage', description: 'd' },
+      content: {
+        sub_mode: 'find-the-bug',
+        language: 'python',
+        snippet: 'x',
+        prompt: 'y',
+        options: { A: 'a', B: 'b', C: 'c', D: 'd' },
+        correct: 'A',
+        explanation: 'z',
+      },
     });
     expect(result.valid).toBe(false);
   });

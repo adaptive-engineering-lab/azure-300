@@ -8,7 +8,7 @@ interface Mode {
   emoji: string;
   description: string;
   details: string;
-  countKey: 'flashcard' | 'mcq' | 'product-id';
+  countKey: 'flashcard' | 'mcq' | 'code-review';
   accent: string;
 }
 
@@ -32,12 +32,12 @@ const MODES: Mode[] = [
     accent: 'ring-sky-500/40 from-sky-500/15',
   },
   {
-    to: ROUTES.productId,
-    title: 'Product ID',
-    emoji: '🔎',
-    description: 'Match Azure services to their categories.',
-    details: 'Fast recognition drills — service name → category, with confusable distractors.',
-    countKey: 'product-id',
+    to: ROUTES.codeReview,
+    title: 'Code Review',
+    emoji: '🔍',
+    description: 'Spot the bug or fill the blank in real Azure ML / Foundry snippets.',
+    details: 'Short Python / YAML / Bash snippets with four-option feedback. Mirrors the exam’s scenario questions.',
+    countKey: 'code-review',
     accent: 'ring-emerald-500/40 from-emerald-500/15',
   },
 ];
