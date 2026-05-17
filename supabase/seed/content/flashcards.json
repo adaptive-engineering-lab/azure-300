@@ -37,5 +37,161 @@
       "front": "What is the difference between an MLflow experiment and an MLflow run?",
       "back": "An experiment is a named container that groups related runs (e.g., `churn-prediction-v1`). A run is a single execution within an experiment, capturing metrics, parameters, artifacts, and tags. Many runs roll up into one experiment so you can compare hyperparameter sweeps, training variants, or fine-tunes side by side."
     }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000004",
+    "type": "flashcard",
+    "domain": "mlops-infra",
+    "topic": "Workspace",
+    "difficulty": 1,
+    "source": "bank",
+    "tags": ["mlops-infra", "workspace", "level-1"],
+    "content": {
+      "front": "What is an Azure Machine Learning workspace?",
+      "back": "The top-level Azure resource for Azure ML. It groups assets (datastores, datasets, environments, components, models, endpoints) and runs (jobs, pipelines), enforces RBAC, and provisions a default storage account, Key Vault, App Insights, and container registry on creation. All Azure ML SDK and CLI commands target a specific workspace."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000005",
+    "type": "flashcard",
+    "domain": "mlops-infra",
+    "topic": "Datastores",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "datastores", "level-2"],
+    "content": {
+      "front": "What is the difference between a datastore and a data asset in Azure ML?",
+      "back": "A datastore is a reference to an underlying Azure storage account (Blob, Data Lake Gen2, File share) plus the credentials Azure ML uses to read/write it. A data asset is a versioned pointer to specific data within a datastore (a path + a snapshot identity), with type `uri_file`, `uri_folder`, or `mltable`. You register a datastore once per workspace; you create many data assets that reference it."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000006",
+    "type": "flashcard",
+    "domain": "mlops-infra",
+    "topic": "Compute",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "compute", "level-2"],
+    "content": {
+      "front": "Compute instance vs. compute cluster — when do you use each?",
+      "back": "A compute instance is a single-node managed VM for interactive notebook work, debugging, and small training jobs. A compute cluster auto-scales between a min and max node count, runs non-interactive jobs (sweep, pipeline, AutoML), and scales to zero when idle. Use the instance for development; use the cluster for production training, hyperparameter sweeps, and parallel pipeline steps."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000007",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "AutoML",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "automl", "level-2"],
+    "content": {
+      "front": "What asset type must AutoML training data use?",
+      "back": "`MLTABLE` (MLTable). AutoML in Azure ML v2 requires training data as a registered MLTable data asset — not a `uri_file` or `uri_folder`. MLTable wraps the underlying file(s) with a schema definition, transformations, and a stable identity that AutoML uses to validate column types and target the right label column."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000008",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "Pipelines",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "pipelines", "level-2"],
+    "content": {
+      "front": "What is required for an Azure ML pipeline job to submit successfully?",
+      "back": "Each step (component invocation) must resolve to a compute target. Set `pipeline_job.settings.default_compute` for the whole pipeline, or set `compute=` on every component individually. If neither is provided, submission fails with a compute-required error before any step runs."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000009",
+    "type": "flashcard",
+    "domain": "genaiops-infra",
+    "topic": "Foundry Setup",
+    "difficulty": 1,
+    "source": "bank",
+    "tags": ["genaiops-infra", "foundry-setup", "level-1"],
+    "content": {
+      "front": "What is the difference between an Azure AI Foundry hub and a Foundry project?",
+      "back": "A hub is the top-level Foundry resource that owns shared infrastructure: a default storage account, Key Vault, AI Services connection, and network configuration. A project lives inside a hub and is the working unit for a team or app — it inherits hub connections and adds its own assets (flows, evaluations, model deployments). One hub can contain many projects."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000010",
+    "type": "flashcard",
+    "domain": "genaiops-infra",
+    "topic": "Managed Identities",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "managed-identities", "level-2"],
+    "content": {
+      "front": "System-assigned vs. user-assigned managed identity — when do you use each?",
+      "back": "A system-assigned identity is created with the resource and deleted with it; one identity per resource. A user-assigned identity is a standalone Azure resource you can attach to many resources at once, surviving resource deletion. Use system-assigned for single-resource scenarios; use user-assigned when multiple workspaces/endpoints need a shared identity (e.g. shared registry access)."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000011",
+    "type": "flashcard",
+    "domain": "genaiops-infra",
+    "topic": "Prompt Flow",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "prompt-flow", "level-2"],
+    "content": {
+      "front": "What is a Prompt Flow in Azure AI Foundry?",
+      "back": "A directed graph of nodes — LLM calls, Python tools, prompt templates, and connections — that orchestrates the end-to-end logic of a generative AI feature. Flows are versioned, can run as batch evaluations against a test dataset, and deploy as a managed online endpoint for production traffic. Edges define data flow between node outputs and inputs."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000012",
+    "type": "flashcard",
+    "domain": "genai-quality",
+    "topic": "Groundedness",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "groundedness", "level-2"],
+    "content": {
+      "front": "Difference between `GroundednessEvaluator` and `GroundednessProEvaluator`?",
+      "back": "`GroundednessEvaluator` is judge-model-based: it requires a configured Azure OpenAI judge model deployment to score whether a response is supported by the provided context. `GroundednessProEvaluator` is a service-based evaluator hosted by Azure AI Content Safety; it needs no judge model — only an Azure AI project connection — and returns a binary plus reasoning. Pro is preferred when you don't want to manage a judge model."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000013",
+    "type": "flashcard",
+    "domain": "genai-quality",
+    "topic": "Safety Evaluators",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "safety-evaluators", "level-2"],
+    "content": {
+      "front": "What is the default pass threshold for Azure AI safety evaluators (violence, sexual, self-harm, hate-unfairness)?",
+      "back": "3. The harm severity scale runs 0–7 (or 'very-low' to 'very-high'); the default pass threshold is 3, meaning a response scoring strictly less than 3 passes. Lowering the threshold to 1 or 0 makes evaluation stricter; raising it to 5 makes it permissive. The threshold is set per evaluator when you instantiate it."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000014",
+    "type": "flashcard",
+    "domain": "genai-optimization",
+    "topic": "RAG",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "rag", "level-2"],
+    "content": {
+      "front": "How does chunk size affect a RAG pipeline?",
+      "back": "Smaller chunks (200–400 tokens) give precise retrieval but may split relevant context across chunks, hurting recall and forcing more chunks into the prompt. Larger chunks (1k–2k tokens) keep context together but reduce embedding precision and increase token cost. A typical starting point is 500–800 tokens with 10–20% overlap, tuned against an eval set."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000015",
+    "type": "flashcard",
+    "domain": "genai-optimization",
+    "topic": "Fine-tuning",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "fine-tuning", "level-2"],
+    "content": {
+      "front": "When should you fine-tune a model instead of using RAG?",
+      "back": "Fine-tune when you need a consistent style, tone, or output format the base model doesn't reliably produce; when you need to teach a fixed, slow-changing skill (classification labels, structured extraction); or when prompt engineering hits cost/latency ceilings. Prefer RAG when the knowledge is large, frequently updated, or must be auditable — fine-tuning bakes facts into weights and is expensive to refresh."
+    }
   }
 ]

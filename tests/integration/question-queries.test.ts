@@ -89,7 +89,7 @@ describe('Question queries — anonymous, filtered reads (T011 / FR-013, US1 acc
   });
 
   it('filters by topic', async () => {
-    const { data, error } = await client.from('questions').select('id, topic').eq('topic', 'rbac');
+    const { data, error } = await client.from('questions').select('id, topic').eq('topic', 'RBAC');
     expect(error).toBeNull();
     expect((data ?? []).length).toBeGreaterThanOrEqual(1);
   });
