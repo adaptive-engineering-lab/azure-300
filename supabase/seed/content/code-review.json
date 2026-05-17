@@ -1,1 +1,232 @@
-[]
+[
+  {
+    "id": "33333333-3333-4333-8333-000000000001",
+    "type": "code-review",
+    "domain": "ml-lifecycle",
+    "topic": "Hyperparameter Tuning",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "hyperparameter-tuning", "level-3", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.ml.sweep import Choice, Normal, BanditPolicy\n\nsweep_job = command_job.sweep(\n    compute=\"gpu-cluster\",\n    sampling_algorithm=\"bayesian\",\n    primary_metric=\"accuracy\",\n    goal=\"maximize\",\n)\nsweep_job.search_space = {\n    \"learning_rate\": Normal(mu=0.001, sigma=0.0005),\n    \"batch_size\": Choice([32, 64, 128]),\n}\nsweep_job.early_termination = BanditPolicy(\n    slack_factor=0.1,\n    evaluation_interval=1,\n    delay_evaluation=5,\n)\nsweep_job.set_limits(max_total_trials=40, max_concurrent_trials=4)",
+      "prompt": "What is the bug in this sweep job configuration?",
+      "options": {
+        "A": "`Normal()` cannot be used with `bayesian` sampling — Bayesian needs `Choice` or `Uniform` only",
+        "B": "`BanditPolicy` is incompatible with `bayesian` sampling — Bayesian does not support early termination",
+        "C": "`max_concurrent_trials=4` is too low for 40 total trials",
+        "D": "`primary_metric=\"accuracy\"` should be quoted as the metric key only, not a string"
+      },
+      "correct": "B",
+      "explanation": "Bayesian sampling is incompatible with all early-termination policies (Bandit, MedianStopping, TruncationSelection) because Bayesian uses results of past trials to plan future ones — terminating trials early invalidates its model. Bayesian supports continuous distributions like `Normal`, so option A is wrong. Concurrency 4 vs total 40 is fine. `primary_metric` is correctly a string."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000002",
+    "type": "code-review",
+    "domain": "ml-lifecycle",
+    "topic": "MLflow",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "mlflow", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "import mlflow\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\n\nX, y = load_iris(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)\n\nmodel = RandomForestClassifier(n_estimators=50)\nmodel.fit(X_train, y_train)\n\nmlflow.autolog()\n\naccuracy = model.score(X_test, y_test)\nprint(f\"accuracy={accuracy}\")",
+      "prompt": "What is wrong with the way MLflow is used here?",
+      "options": {
+        "A": "`mlflow.autolog()` is called AFTER `model.fit()` — it captures nothing for the just-finished run; it must be called before training",
+        "B": "`mlflow.log_metric` is missing — autolog does not capture accuracy",
+        "C": "`mlflow.start_run()` is missing — autolog requires an explicit run context",
+        "D": "RandomForestClassifier is not supported by `mlflow.autolog()`"
+      },
+      "correct": "A",
+      "explanation": "`mlflow.autolog()` instruments framework calls (like `model.fit`) at the moment it is invoked — calls placed after training capture nothing for that completed run. Move the call above `model.fit`. Autolog already records the framework's eval metrics. Autolog auto-starts a run if none is active. scikit-learn is fully supported."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000003",
+    "type": "code-review",
+    "domain": "ml-lifecycle",
+    "topic": "AutoML",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "automl", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.ml import automl, Input\nfrom azure.ai.ml.constants import AssetTypes\n\ntraining_data = Input(\n    type=AssetTypes.URI_FILE,\n    path=\"azureml://datastores/workspaceblobstore/paths/data/train.csv\",\n)\n\nclassification_job = automl.classification(\n    compute=\"cpu-cluster\",\n    experiment_name=\"churn-automl\",\n    training_data=training_data,\n    target_column_name=\"churned\",\n    primary_metric=\"accuracy\",\n)",
+      "prompt": "Why will this AutoML classification job fail at submit time?",
+      "options": {
+        "A": "`primary_metric=\"accuracy\"` is invalid for classification — must be `\"AUC\"`",
+        "B": "Training data type must be `AssetTypes.MLTABLE` — AutoML requires an MLTable, not `URI_FILE`",
+        "C": "`compute=\"cpu-cluster\"` is invalid — AutoML requires GPU compute",
+        "D": "`target_column_name` is missing from the data path"
+      },
+      "correct": "B",
+      "explanation": "AutoML v2 requires training data as an MLTable asset (`AssetTypes.MLTABLE`); MLTable wraps files with schema metadata AutoML validates at submission. `URI_FILE` has no schema and fails validation. Accuracy is a valid classification metric. CPU compute is fine. The target column is correctly named."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000004",
+    "type": "code-review",
+    "domain": "ml-lifecycle",
+    "topic": "Pipelines",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "pipelines", "level-3", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.ml import MLClient\nfrom azure.identity import DefaultAzureCredential\n\nml_client = MLClient.from_config(DefaultAzureCredential())\n\nschedule_name = \"daily-retrain\"\nml_client.schedules.begin_delete(name=schedule_name).result()",
+      "prompt": "Why does the delete call fail or behave unexpectedly here?",
+      "options": {
+        "A": "`schedules.begin_delete` does not exist — it must be `schedules.delete`",
+        "B": "The schedule must be disabled with `schedules.begin_disable()` before it can be deleted",
+        "C": "`DefaultAzureCredential` lacks permission to delete schedules",
+        "D": "`from_config()` cannot be used in production — it only works in notebooks"
+      },
+      "correct": "B",
+      "explanation": "Azure ML schedules must be disabled before they can be deleted — call `begin_disable(name=...).result()` first, then `begin_delete(name=...).result()`. The two-step pattern prevents accidental deletion of an active schedule. The method names are correct; credentials and config loading are unrelated."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000005",
+    "type": "code-review",
+    "domain": "mlops-infra",
+    "topic": "GitHub Integration",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "github-integration", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "yaml",
+      "snippet": "name: train-and-deploy\n\non:\n  pull_request:\n    branches: [main]\n\njobs:\n  train:\n    runs-on: ubuntu-latest\n    environment: production\n    steps:\n      - uses: actions/checkout@v4\n      - uses: azure/login@v2\n        with:\n          creds: ${{ secrets.AZURE_CREDENTIALS }}\n      - run: az ml job create --file job.yml --workspace-name prod-ws --resource-group ml-rg",
+      "prompt": "Why does production not get a new deployment after a PR merges to main?",
+      "options": {
+        "A": "`on: pull_request` fires when a PR is opened or updated, not after merge — use `on: push: branches: [main]` instead",
+        "B": "`environment: production` requires manual approval that the workflow never reaches",
+        "C": "`azure/login@v2` should be `azure/login@v1` for OIDC support",
+        "D": "`az ml job create` is deprecated — use `az ml deployment create`"
+      },
+      "correct": "A",
+      "explanation": "`on: pull_request` fires for PR events (opened, synchronize, reopened) — not on the merge itself. After merge to main, that event does not refire. Use `on: push: branches: [main]` to trigger after merge. Environment approval would block but the workflow would still attempt to run. `azure/login@v2` supports OIDC. `az ml job create` is current."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000006",
+    "type": "code-review",
+    "domain": "mlops-infra",
+    "topic": "IaC",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "iac", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "yaml",
+      "snippet": "name: deploy-infra\n\non:\n  push:\n    branches: [main]\n\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: azure/login@v2\n        with:\n          creds: ${AZURE_CREDENTIALS}\n      - run: az deployment group create --resource-group ml-rg --template-file main.bicep",
+      "prompt": "Why does the `azure/login@v2` step fail to authenticate?",
+      "options": {
+        "A": "`${AZURE_CREDENTIALS}` is bash syntax — GitHub Actions needs `${{ secrets.AZURE_CREDENTIALS }}`",
+        "B": "`azure/login@v2` does not support service principal JSON; must use OIDC",
+        "C": "The Bicep file path is wrong",
+        "D": "`runs-on: ubuntu-latest` is incompatible with `az login`"
+      },
+      "correct": "A",
+      "explanation": "GitHub Actions uses `${{ secrets.NAME }}` interpolation for secrets. `${AZURE_CREDENTIALS}` is shell-style and resolves to an empty string, leaving login without credentials. `azure/login@v2` accepts both SP JSON and OIDC. The Bicep path is fine. ubuntu-latest works for `az`."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000007",
+    "type": "code-review",
+    "domain": "genaiops-infra",
+    "topic": "Prompt Flow",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "prompt-flow", "level-2", "fill-the-blank"],
+    "content": {
+      "sub_mode": "fill-the-blank",
+      "language": "python",
+      "snippet": "from azure.ai.ml import MLClient\nfrom azure.ai.ml.entities import ManagedOnlineEndpoint, ManagedOnlineDeployment\n\nendpoint = ManagedOnlineEndpoint(\n    name=\"chat-endpoint\",\n    auth_mode=\"___BLANK___\",\n)\n\ndeployment = ManagedOnlineDeployment(\n    name=\"blue\",\n    endpoint_name=\"chat-endpoint\",\n    model=\"azureml:chat-flow:1\",\n    instance_type=\"Standard_DS3_v2\",\n    instance_count=1,\n)",
+      "prompt": "Which `auth_mode` lets clients authenticate with an Entra ID (AAD) token instead of an endpoint key?",
+      "options": {
+        "A": "`\"key\"`",
+        "B": "`\"aml_token\"`",
+        "C": "`\"aad_token\"`",
+        "D": "`\"managed_identity\"`"
+      },
+      "correct": "C",
+      "explanation": "`auth_mode=\"aad_token\"` lets clients call the endpoint with a Microsoft Entra ID (AAD) bearer token — preferred for service-to-service auth without managing keys. `\"key\"` issues static endpoint keys. `\"aml_token\"` issues short-lived Azure ML tokens. `\"managed_identity\"` isn't an `auth_mode` value — managed identities authenticate the endpoint's outbound calls."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000008",
+    "type": "code-review",
+    "domain": "genaiops-infra",
+    "topic": "Prompt Flow",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "prompt-flow", "level-2", "what-does-this-do"],
+    "content": {
+      "sub_mode": "what-does-this-do",
+      "language": "yaml",
+      "snippet": "$schema: https://azuremlschemas.azureedge.net/promptflow/latest/Flow.schema.json\ninputs:\n  question:\n    type: string\nnodes:\n  - name: retrieve\n    type: python\n    source:\n      type: code\n      path: retrieve.py\n    inputs:\n      query: ${inputs.question}\n  - name: answer\n    type: llm\n    source:\n      type: code\n      path: answer.jinja2\n    inputs:\n      question: ${inputs.question}\n      context: ${retrieve.output}\n    connection: azure_open_ai\n    api: chat\noutputs:\n  reply:\n    type: string\n    reference: ${answer.output}",
+      "prompt": "What pattern does this Prompt Flow implement?",
+      "options": {
+        "A": "Fine-tuning the connected Azure OpenAI model on user questions",
+        "B": "Retrieval-Augmented Generation (RAG): retrieve context, then call an LLM with question + retrieved context",
+        "C": "A two-stage classification pipeline (intent → entity)",
+        "D": "Streaming inference for token-by-token output"
+      },
+      "correct": "B",
+      "explanation": "The `retrieve` Python node fetches context for the question, then the `answer` LLM node receives both the question and the retrieved context — classic RAG. No fine-tuning occurs. There's no classification step. Streaming would be a deployment concern, not a flow-graph shape."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000009",
+    "type": "code-review",
+    "domain": "genai-quality",
+    "topic": "Safety Evaluators",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "safety-evaluators", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.evaluation import ViolenceEvaluator\nfrom azure.identity import DefaultAzureCredential\n\nproject = {\n    \"subscription_id\": \"<sid>\",\n    \"resource_group_name\": \"ml-rg\",\n    \"project_name\": \"my-project\",\n}\nviolence_eval = ViolenceEvaluator(\n    azure_ai_project=project,\n    credential=DefaultAzureCredential(),\n    threshold=5,\n)\nresult = violence_eval(query=\"...\", response=\"...\")\nassert result[\"violence_score\"] < 5",
+      "prompt": "What is incorrect about the threshold configuration?",
+      "options": {
+        "A": "Safety evaluators do not accept a `threshold` argument",
+        "B": "`threshold=5` is too permissive — the recommended pass threshold is 3 (severity < 3 passes)",
+        "C": "Threshold must be a string like `\"medium\"`, not an integer",
+        "D": "The result key should be `violence_severity`, not `violence_score`"
+      },
+      "correct": "B",
+      "explanation": "Azure AI safety evaluators score severity on a 0–7 scale; the recommended pass threshold is 3 (responses scoring strictly less than 3 pass). Setting threshold to 5 lets very-high-severity content pass — too permissive. Safety evaluators do accept a `threshold` int. The result key `violence_score` is correct."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000010",
+    "type": "code-review",
+    "domain": "genai-optimization",
+    "topic": "RAG",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["genai-optimization", "rag", "level-3", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.search.documents import SearchClient\nfrom azure.search.documents.models import VectorizedQuery\nfrom azure.core.credentials import AzureKeyCredential\n\nclient = SearchClient(\n    endpoint=\"https://my-search.search.windows.net\",\n    index_name=\"docs\",\n    credential=AzureKeyCredential(\"<key>\"),\n)\n\nresults = client.search(\n    search_text=None,\n    vector_queries=[VectorizedQuery(vector=embedding, k_nearest_neighbors=5, fields=\"contentVector\")],\n    top=5,\n)",
+      "prompt": "Why does this query miss documents that a hybrid search would catch?",
+      "options": {
+        "A": "`search_text=None` makes this a pure vector query — no BM25 keyword ranking. Pass the user's question as `search_text` to make it hybrid",
+        "B": "`k_nearest_neighbors=5` is too low; must be ≥ 20 for hybrid",
+        "C": "`fields=\"contentVector\"` is wrong — must be `\"content\"`",
+        "D": "`top=5` should be omitted; hybrid search ignores `top`"
+      },
+      "correct": "A",
+      "explanation": "Hybrid search requires BOTH `search_text` (BM25 lexical) AND `vector_queries` (vector similarity). Passing `search_text=None` makes it pure vector search and misses documents that BM25 would catch on exact keyword matches. The fields and `top` parameter are valid; KNN of 5 is fine."
+    }
+  }
+]

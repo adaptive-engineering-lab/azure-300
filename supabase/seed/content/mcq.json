@@ -1,1 +1,502 @@
-[]
+[
+  {
+    "id": "22222222-2222-4222-8222-000000000001",
+    "type": "mcq",
+    "domain": "mlops-infra",
+    "topic": "Workspace",
+    "difficulty": 1,
+    "source": "bank",
+    "tags": ["mlops-infra", "workspace", "level-1"],
+    "content": {
+      "question": "Which Azure resources are provisioned by default when you create an Azure Machine Learning workspace?",
+      "options": {
+        "A": "Storage account, Key Vault, Application Insights, and Container Registry",
+        "B": "Storage account and Key Vault only",
+        "C": "Storage account, Key Vault, Container Registry, and a default compute cluster",
+        "D": "Storage account, SQL Database, and Application Insights"
+      },
+      "correct": "A",
+      "explanation": "An Azure ML workspace automatically provisions a storage account (default datastore), a Key Vault (secrets), Application Insights (telemetry), and a Container Registry (environment images). Compute is NOT auto-provisioned — you create compute instances or clusters separately."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000002",
+    "type": "mcq",
+    "domain": "mlops-infra",
+    "topic": "Compute",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "compute", "level-2"],
+    "content": {
+      "question": "You need to run a hyperparameter sweep with 50 parallel trials, each requesting one GPU node. Which compute target is appropriate?",
+      "options": {
+        "A": "A compute instance with 1 GPU node",
+        "B": "A compute cluster with min_instances=0 and max_instances=50",
+        "C": "Azure Kubernetes Service cluster attached to the workspace",
+        "D": "A serverless endpoint with concurrency=50"
+      },
+      "correct": "B",
+      "explanation": "Compute clusters auto-scale between min and max instances, are designed for non-interactive parallel jobs (sweeps, pipelines), and scale to zero when idle. Compute instances are single-node and not suitable for parallel trials. AKS is for inference, not training sweeps. Serverless endpoints serve inference, not training."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000003",
+    "type": "mcq",
+    "domain": "mlops-infra",
+    "topic": "Environments",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "environments", "level-2"],
+    "content": {
+      "question": "Which approach makes an Azure ML environment reproducible across the team?",
+      "options": {
+        "A": "Install packages with `pip install` at the start of each training script",
+        "B": "Register a versioned environment defined by a Docker image and a conda.yml, and reference it by name and version in every job",
+        "C": "Use the default curated environment without pinning versions",
+        "D": "Commit a requirements.txt to the repo and have each user create their own environment"
+      },
+      "correct": "B",
+      "explanation": "Registered environments with a Docker image plus pinned conda.yml/requirements give a stable, version-addressable runtime that every job references identically. Inline pip installs drift over time. Default curated environments aren't pinned to a project. Per-user environments diverge across the team."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000004",
+    "type": "mcq",
+    "domain": "mlops-infra",
+    "topic": "GitHub Integration",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "github-integration", "level-2"],
+    "content": {
+      "question": "How should an Azure ML GitHub Actions workflow authenticate to the workspace?",
+      "options": {
+        "A": "Hardcode the service principal client secret in the workflow YAML",
+        "B": "Use OpenID Connect (OIDC) with a federated credential on a user-assigned managed identity or app registration",
+        "C": "Use the workspace's storage account key as a workflow input",
+        "D": "Prompt for credentials at workflow runtime via `az login`"
+      },
+      "correct": "B",
+      "explanation": "OIDC with federated credentials is the recommended pattern: GitHub Actions exchanges a workflow-scoped token for an Azure access token without long-lived secrets stored in the repo. Hardcoded secrets are a leak risk; storage keys grant too much; interactive login isn't possible in CI."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000005",
+    "type": "mcq",
+    "domain": "mlops-infra",
+    "topic": "Registries",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "registries", "level-2"],
+    "content": {
+      "question": "What is an Azure ML registry used for?",
+      "options": {
+        "A": "Sharing models, environments, and components across multiple workspaces in an organization",
+        "B": "Storing raw training datasets",
+        "C": "Hosting Docker images only (replaces Azure Container Registry)",
+        "D": "Tracking experiment runs across workspaces"
+      },
+      "correct": "A",
+      "explanation": "An Azure ML registry is an organization-scoped catalog for sharing reusable assets — models, environments, components, and data — across many workspaces. ACR still holds the underlying Docker images. Datasets live in datastores or registries. Run tracking is per-workspace (MLflow)."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000006",
+    "type": "mcq",
+    "domain": "ml-lifecycle",
+    "topic": "Hyperparameter Tuning",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "hyperparameter-tuning", "level-2"],
+    "content": {
+      "question": "Which sampling algorithm is INVALID with a continuous `Normal()` hyperparameter expression in an Azure ML sweep job?",
+      "options": {
+        "A": "Random",
+        "B": "Bayesian",
+        "C": "Grid",
+        "D": "Sobol"
+      },
+      "correct": "C",
+      "explanation": "Grid sampling requires every hyperparameter expression to be discrete (`Choice`). A `Normal()` distribution is continuous and incompatible with grid. Random and Bayesian both support continuous distributions. Sobol is supported as a quasi-random alternative for continuous spaces."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000007",
+    "type": "mcq",
+    "domain": "ml-lifecycle",
+    "topic": "Hyperparameter Tuning",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "hyperparameter-tuning", "level-3"],
+    "content": {
+      "question": "Which sweep job setup is INCOMPATIBLE with a `BanditPolicy` early-termination policy?",
+      "options": {
+        "A": "Bayesian sampling with a `slack_factor` of 0.1",
+        "B": "Random sampling with `evaluation_interval=1` and `delay_evaluation=5`",
+        "C": "Grid sampling with `slack_amount=0.05` and `delay_evaluation=10`",
+        "D": "Bayesian sampling — Bayesian does not support early termination"
+      },
+      "correct": "D",
+      "explanation": "Bayesian sampling is incompatible with ALL early-termination policies (Bandit, MedianStopping, TruncationSelection) because Bayesian uses prior trial results to plan future trials, which conflicts with terminating trials early. Random and Grid both support Bandit. The other options are valid configurations."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000008",
+    "type": "mcq",
+    "domain": "ml-lifecycle",
+    "topic": "AutoML",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "automl", "level-2"],
+    "content": {
+      "question": "Your AutoML classification job fails immediately on submission with a data type error. The training data is registered as a `uri_file` data asset pointing to a CSV. What's wrong?",
+      "options": {
+        "A": "AutoML cannot read CSV files; convert to Parquet",
+        "B": "AutoML requires the training data to be an `MLTable` data asset, not `uri_file`",
+        "C": "AutoML requires the data to be in Azure Data Lake Gen2, not Blob storage",
+        "D": "AutoML requires the data to be split into train/validation/test files before submission"
+      },
+      "correct": "B",
+      "explanation": "AutoML v2 requires training data as an MLTable asset; MLTable wraps the file with schema definitions (column types, target column) that AutoML validates at job submission. `uri_file` has no schema and fails validation. CSV inside an MLTable is supported. AutoML can split data itself."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000009",
+    "type": "mcq",
+    "domain": "ml-lifecycle",
+    "topic": "Pipelines",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "pipelines", "level-2"],
+    "content": {
+      "question": "You submit a pipeline job and it fails with a 'compute is required' error before any step runs. What's the most likely cause?",
+      "options": {
+        "A": "The compute cluster has not finished provisioning",
+        "B": "The pipeline has no `default_compute` in `settings` and at least one component has no `compute=` set",
+        "C": "The workspace quota is exceeded",
+        "D": "The components are using incompatible environment images"
+      },
+      "correct": "B",
+      "explanation": "Every component invocation must resolve to a compute target. Setting `pipeline_job.settings.default_compute` covers all unspecified components; otherwise each component must set its own `compute=`. Missing both produces a submit-time error before any step starts. Quota and environment issues fail later at step run time."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000010",
+    "type": "mcq",
+    "domain": "ml-lifecycle",
+    "topic": "Online Endpoints",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "online-endpoints", "level-2"],
+    "content": {
+      "question": "Which deployment strategy lets you route a small percentage of production traffic to a new model version while keeping the previous version serving the rest?",
+      "options": {
+        "A": "Create a second online endpoint and switch DNS",
+        "B": "Add a new deployment under the same managed online endpoint and adjust `traffic` allocations",
+        "C": "Replace the existing deployment in place",
+        "D": "Deploy to a batch endpoint and split inference between two registered models"
+      },
+      "correct": "B",
+      "explanation": "Managed online endpoints support multiple deployments under one endpoint with weighted `traffic` allocation (e.g. blue=90, green=10) — classic blue-green / canary rollout. DNS-level switching is coarse. In-place replacement loses the old version. Batch endpoints serve async inference, not real-time."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000011",
+    "type": "mcq",
+    "domain": "ml-lifecycle",
+    "topic": "Model Registration",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "model-registration", "level-2"],
+    "content": {
+      "question": "What is the recommended way to register a model produced by an Azure ML training job?",
+      "options": {
+        "A": "Download the model artifact locally and re-upload to the workspace UI",
+        "B": "Reference the job output via `jobs/<run-id>/outputs/<artifact-name>` when calling `ml_client.models.create_or_update`",
+        "C": "Copy the artifact to a separate storage account first, then register from that path",
+        "D": "Register the model only after deployment so the deployment can capture its version"
+      },
+      "correct": "B",
+      "explanation": "Pointing model registration at the job's output path (`runs:/...` or `azureml://jobs/<run-id>/outputs/...`) preserves lineage between the training job and the registered model. Manual download/re-upload breaks lineage. A separate storage account is unnecessary. Deployment requires an already-registered model."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000012",
+    "type": "mcq",
+    "domain": "ml-lifecycle",
+    "topic": "Data Drift",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "data-drift", "level-2"],
+    "content": {
+      "question": "Which signal best detects that an in-production model's input distribution has changed compared to training?",
+      "options": {
+        "A": "Decrease in request latency",
+        "B": "Drop in model accuracy on a fresh labelled batch",
+        "C": "Population Stability Index (PSI) on each feature between training data and live inputs",
+        "D": "Increase in number of inference requests per minute"
+      },
+      "correct": "C",
+      "explanation": "PSI (or KL divergence / Jensen-Shannon) compares feature distributions and flags drift without needing fresh labels. An accuracy drop is a lagging indicator and requires labelled feedback. Latency and request volume are operational metrics, not distributional signals."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000013",
+    "type": "mcq",
+    "domain": "ml-lifecycle",
+    "topic": "Responsible AI",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "responsible-ai", "level-2"],
+    "content": {
+      "question": "Which Responsible AI dashboard component requires you to enable model explainability when running the RAI insights pipeline?",
+      "options": {
+        "A": "Error analysis",
+        "B": "Feature importance (global and local)",
+        "C": "Data balance",
+        "D": "Counterfactual analysis"
+      },
+      "correct": "B",
+      "explanation": "Feature importance is computed by the explainer step (e.g., SHAP-based) — you must enable explainability when running the RAI insights pipeline for it to appear. Error analysis, data balance, and counterfactual analysis run as separate components with their own flags."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000014",
+    "type": "mcq",
+    "domain": "genaiops-infra",
+    "topic": "Foundry Setup",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "foundry-setup", "level-2"],
+    "content": {
+      "question": "Which statement about Azure AI Foundry hubs and projects is correct?",
+      "options": {
+        "A": "A project can belong to multiple hubs simultaneously",
+        "B": "Each project inherits connections (Azure OpenAI, AI Search) defined on its parent hub",
+        "C": "Hubs hold flow assets and projects hold infrastructure",
+        "D": "A hub can only contain one project"
+      },
+      "correct": "B",
+      "explanation": "Projects inherit connections (Azure OpenAI, Azure AI Search, Content Safety) and shared resources from their hub, so a team-wide hub config flows to every project below it. Projects belong to exactly one hub. Flows live in projects, not hubs. A hub can contain many projects."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000015",
+    "type": "mcq",
+    "domain": "genaiops-infra",
+    "topic": "Serverless Endpoints",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "serverless-endpoints", "level-2"],
+    "content": {
+      "question": "Serverless endpoints in Azure AI Foundry are billed by:",
+      "options": {
+        "A": "Reserved compute capacity per hour",
+        "B": "Number of tokens processed (input + output)",
+        "C": "Number of model deployments active",
+        "D": "Container instance uptime"
+      },
+      "correct": "B",
+      "explanation": "Serverless endpoints (pay-as-you-go) bill per input/output token consumed — no reserved capacity, no idle charges. Managed compute endpoints bill by VM uptime. Provisioned Throughput Units (PTU) reserve capacity per hour. Container instances aren't a serverless concept."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000016",
+    "type": "mcq",
+    "domain": "genaiops-infra",
+    "topic": "Provisioned Throughput",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["genaiops-infra", "provisioned-throughput", "level-3"],
+    "content": {
+      "question": "When is Provisioned Throughput Units (PTU) the right choice over a pay-as-you-go serverless endpoint?",
+      "options": {
+        "A": "Sporadic prototyping with single-digit RPS",
+        "B": "Steady high-volume production traffic where predictable latency and reserved capacity matter",
+        "C": "Short-lived batch evaluations that run once a week",
+        "D": "Free-tier evaluation of a new model variant"
+      },
+      "correct": "B",
+      "explanation": "PTU reserves capacity, giving predictable latency and cost at high steady volume — the regime where PAYG token pricing would be more expensive and less predictable. Sporadic, low, or one-off traffic is better served by PAYG / serverless. Free-tier work shouldn't pay for reserved capacity."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000017",
+    "type": "mcq",
+    "domain": "genaiops-infra",
+    "topic": "Prompt Flow",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "prompt-flow", "level-2"],
+    "content": {
+      "question": "What is the recommended way to version a Prompt Flow as it evolves during development?",
+      "options": {
+        "A": "Rename the flow each iteration (v1, v2, …)",
+        "B": "Commit the `flow.dag.yaml` and tool files to Git; let the repo's commit history be the version history",
+        "C": "Export each version as a ZIP and upload to blob storage",
+        "D": "Edit the flow only through the Foundry UI — versioning is automatic"
+      },
+      "correct": "B",
+      "explanation": "Prompt flows are file-based (`flow.dag.yaml`, node code, prompt templates) and are designed to be checked into Git, so commit history doubles as flow history with PR review and rollback. Renaming flows scatters versions. ZIP exports lose the workflow. The UI does NOT auto-version under the hood."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000018",
+    "type": "mcq",
+    "domain": "genaiops-infra",
+    "topic": "RBAC",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "rbac", "level-2"],
+    "content": {
+      "question": "Which built-in role is appropriate for an MLOps engineer who must deploy models and manage endpoints in a Foundry project but should NOT have permission to modify hub-level connections?",
+      "options": {
+        "A": "Owner of the hub",
+        "B": "Azure AI Developer on the project",
+        "C": "Reader on the project",
+        "D": "Storage Blob Data Contributor on the hub's storage account"
+      },
+      "correct": "B",
+      "explanation": "Azure AI Developer (project scope) lets the engineer manage assets, flows, and endpoints inside the project without granting hub-level admin rights. Hub Owner is too broad. Project Reader can't deploy. Storage role doesn't grant Foundry control-plane permissions."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000019",
+    "type": "mcq",
+    "domain": "genai-quality",
+    "topic": "Evaluation Metrics",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "evaluation-metrics", "level-2"],
+    "content": {
+      "question": "Which evaluator measures whether a response is supported by the retrieved context, without requiring a configured judge model deployment?",
+      "options": {
+        "A": "`GroundednessEvaluator`",
+        "B": "`GroundednessProEvaluator`",
+        "C": "`RelevanceEvaluator`",
+        "D": "`CoherenceEvaluator`"
+      },
+      "correct": "B",
+      "explanation": "`GroundednessProEvaluator` is service-hosted by Azure AI Content Safety — no judge model deployment required. `GroundednessEvaluator`, `RelevanceEvaluator`, and `CoherenceEvaluator` all require an Azure OpenAI judge model connection configured on the project."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000020",
+    "type": "mcq",
+    "domain": "genai-quality",
+    "topic": "Safety Evaluators",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "safety-evaluators", "level-2"],
+    "content": {
+      "question": "What is the default pass threshold for Azure AI safety evaluators (Violence, Sexual, SelfHarm, HateUnfairness)?",
+      "options": {
+        "A": "0 — any non-zero severity fails",
+        "B": "3 — severity strictly less than 3 passes",
+        "C": "5 — severity less than or equal to 5 passes",
+        "D": "7 — only the maximum severity fails"
+      },
+      "correct": "B",
+      "explanation": "Default pass threshold is 3 on the 0–7 severity scale. A response scoring less than 3 (very-low or low) passes; 3 or above fails. Setting the threshold to 0 makes evaluation strictest; 5 or 7 makes it more permissive."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000021",
+    "type": "mcq",
+    "domain": "genai-quality",
+    "topic": "Observability",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "observability", "level-2"],
+    "content": {
+      "question": "Which Azure service captures distributed traces from a Prompt Flow deployment, including per-node latency and token usage?",
+      "options": {
+        "A": "Azure Monitor Logs (Log Analytics workspace) via Application Insights tied to the project",
+        "B": "Azure SQL audit logs",
+        "C": "Azure Storage diagnostic settings",
+        "D": "Azure Key Vault access logs"
+      },
+      "correct": "A",
+      "explanation": "Prompt Flow deployments emit OpenTelemetry traces to Application Insights (which forwards to Log Analytics). Each node appears as a span with latency, token counts, and inputs/outputs. SQL audit logs, storage diagnostics, and Key Vault logs are unrelated to flow tracing."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000022",
+    "type": "mcq",
+    "domain": "genai-optimization",
+    "topic": "RAG",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "rag", "level-2"],
+    "content": {
+      "question": "Your RAG system retrieves relevant chunks but the model answers using only partial information from one chunk. Which adjustment is most likely to improve answer completeness without changing the model?",
+      "options": {
+        "A": "Lower the similarity threshold so fewer chunks pass",
+        "B": "Increase the number of top-K retrieved chunks and expand the prompt's context window allowance",
+        "C": "Switch the embedding model to a smaller one to speed up retrieval",
+        "D": "Reduce chunk size to 100 tokens"
+      },
+      "correct": "B",
+      "explanation": "Increasing top-K and the context budget lets the model see more relevant chunks, addressing the partial-information symptom. Lowering the threshold returns fewer chunks. Smaller embeddings change retrieval quality, not coverage. Shrinking chunks to 100 tokens worsens fragmentation."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000023",
+    "type": "mcq",
+    "domain": "genai-optimization",
+    "topic": "Hybrid Search",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "hybrid-search", "level-2"],
+    "content": {
+      "question": "What does hybrid search in Azure AI Search combine?",
+      "options": {
+        "A": "Keyword (BM25) and vector (embedding similarity) search, with optional semantic ranking on top",
+        "B": "Vector search across two embedding models",
+        "C": "Two keyword indexes joined on a shared key",
+        "D": "Full-text and SQL queries"
+      },
+      "correct": "A",
+      "explanation": "Hybrid search runs BM25 keyword scoring AND vector similarity scoring in parallel, fuses the results (typically Reciprocal Rank Fusion), and can apply semantic ranking afterward. This catches lexical matches BM25 finds well AND semantic matches vectors find well."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000024",
+    "type": "mcq",
+    "domain": "genai-optimization",
+    "topic": "Fine-tuning",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["genai-optimization", "fine-tuning", "level-3"],
+    "content": {
+      "question": "A team wants the model to consistently produce JSON in a specific schema and to use a niche vocabulary their docs use. They have ~5,000 high-quality input/output examples. Which approach is most appropriate?",
+      "options": {
+        "A": "Few-shot prompt engineering only",
+        "B": "RAG with the documentation as the corpus",
+        "C": "Supervised fine-tuning on the 5,000 examples",
+        "D": "Switch to a larger base model"
+      },
+      "correct": "C",
+      "explanation": "Consistent structured output and stable vocabulary are exactly the patterns SFT bakes in better than prompting. 5,000 examples is enough for SFT on a small/medium model. Few-shot prompts drift across long conversations. RAG adds knowledge but doesn't reliably change output format. A larger model doesn't fix format drift."
+    }
+  },
+  {
+    "id": "22222222-2222-4222-8222-000000000025",
+    "type": "mcq",
+    "domain": "ml-lifecycle",
+    "topic": "Monitoring",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "monitoring", "level-2"],
+    "content": {
+      "question": "You schedule data drift monitoring on a deployed Azure ML model. Which baseline does drift compare against?",
+      "options": {
+        "A": "Yesterday's inference inputs",
+        "B": "A registered baseline data asset, typically the training feature set",
+        "C": "A random sample of internet text",
+        "D": "The model's evaluation test split"
+      },
+      "correct": "B",
+      "explanation": "Drift monitors compare current inference inputs against a registered baseline data asset — typically a snapshot of the training feature distribution. The test split is for evaluating accuracy, not drift. Yesterday's inputs would compare drift to drift. Internet text is irrelevant."
+    }
+  }
+]
