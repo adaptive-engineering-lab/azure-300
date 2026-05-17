@@ -1,15 +1,31 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DOMAINS, DOMAIN_LABELS, type Domain } from '../lib/questions/types';
 import { useAppStore, type SessionLength } from '../lib/store';
 import { ROUTES } from '../lib/routes';
 
 const LENGTHS: SessionLength[] = [10, 20, 30];
 
+/**
+ * Pre-select a domain from `?domain=<slug>` (singular) or the first
+ * value in `?domains=<csv>` (plural). Used by feature 005's
+ * "Review missed" CTA on the quiz results screen, and by feature
+ * 007's "Focus areas" CTA on the progress dashboard. Unknown slugs
+ * are silently ignored (FR + 002 T033b contract).
+ */
+function initialDomain(params: URLSearchParams): Domain | 'all' {
+  const candidate = params.get('domain') ?? params.get('domains')?.split(',')[0] ?? null;
+  if (!candidate) return 'all';
+  return (DOMAINS as readonly string[]).includes(candidate)
+    ? (candidate as Domain)
+    : 'all';
+}
+
 export default function FlashcardSelectPage() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const defaultLength = useAppStore((s) => s.preferences.defaultSessionLength);
-  const [domain, setDomain] = useState<Domain | 'all'>('all');
+  const [domain, setDomain] = useState<Domain | 'all'>(() => initialDomain(params));
   const [length, setLength] = useState<SessionLength>(defaultLength);
 
   function start() {
