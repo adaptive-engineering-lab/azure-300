@@ -11,6 +11,8 @@ export const ROUTES = {
   dailyReview: '/learn/daily-review',
   billing: '/settings/billing',
   whatsInPro: '/whats-in-pro',
+  privacy: '/legal/privacy',
+  terms: '/legal/terms',
   admin: '/admin',
 } as const;
 
