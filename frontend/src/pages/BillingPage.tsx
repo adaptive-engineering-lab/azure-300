@@ -110,7 +110,10 @@ export default function BillingPage() {
         </p>
         {!ent.isPro && (
           <p className="mt-3 text-sm">
-            Pro is about <strong>making the app yours</strong> — no study content is paywalled.
+            Pro is about <strong>making the app yours</strong> — no study content is paywalled.{' '}
+            <Link to={ROUTES.whatsInPro} className="text-accent underline decoration-dotted underline-offset-2">
+              What's in Pro?
+            </Link>
           </p>
         )}
       </div>

@@ -1,19 +1,30 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppStore, type Theme, type SessionLength } from '../lib/store';
+import { FREE_THEMES, PRO_THEMES } from '../lib/store/preferences';
 import { useAuth } from '../lib/auth/AuthProvider';
+import { useEntitlement } from '../lib/entitlement';
 import { supabase } from '../lib/supabase';
 import { ROUTES } from '../lib/routes';
+import ProBadge from '../components/ProBadge';
 
 const SESSION_LENGTHS: SessionLength[] = [10, 20, 30];
-const THEMES: Theme[] = ['dark', 'light'];
+
+const THEME_LABEL: Record<Theme, string> = {
+  dark: 'Dark',
+  light: 'Light',
+  solar: 'Solar',
+  forest: 'Forest',
+};
 
 export default function SettingsPage() {
   const prefs = useAppStore((s) => s.preferences);
   const setTheme = useAppStore((s) => s.setTheme);
   const setLength = useAppStore((s) => s.setDefaultSessionLength);
   const setReducedMotion = useAppStore((s) => s.setReducedMotion);
+  const setExamDate = useAppStore((s) => s.setExamDate);
   const { user, signOut } = useAuth();
+  const ent = useEntitlement();
 
   return (
     <section className="mx-auto w-full max-w-2xl">
@@ -23,22 +34,52 @@ export default function SettingsPage() {
 
       <fieldset className="rounded-lg bg-bg-elevated p-4">
         <legend className="px-1 text-sm font-semibold text-fg-muted">Theme</legend>
-        <div className="mt-2 flex gap-2">
-          {THEMES.map((t) => (
+        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {FREE_THEMES.map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setTheme(t)}
               aria-pressed={prefs.theme === t}
               className={[
-                'flex-1 rounded-md px-3 py-2 text-sm font-medium capitalize transition-colors',
+                'rounded-md px-3 py-2 text-sm font-medium transition-colors',
                 prefs.theme === t ? 'bg-accent text-accent-fg' : 'bg-bg text-fg',
               ].join(' ')}
             >
-              {t}
+              {THEME_LABEL[t]}
             </button>
           ))}
+          {PRO_THEMES.map((t) => {
+            const locked = !ent.isPro;
+            return (
+              <button
+                key={t}
+                type="button"
+                onClick={() => !locked && setTheme(t)}
+                aria-pressed={prefs.theme === t}
+                aria-disabled={locked}
+                title={locked ? 'Pro theme — upgrade to unlock' : THEME_LABEL[t]}
+                className={[
+                  'relative rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  prefs.theme === t ? 'bg-accent text-accent-fg' : 'bg-bg text-fg',
+                  locked ? 'cursor-not-allowed opacity-60' : '',
+                ].join(' ')}
+              >
+                {THEME_LABEL[t]}
+                {locked && (
+                  <span className="ml-1.5 inline-flex items-center rounded-full bg-accent/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-accent ring-1 ring-accent/40">
+                    Pro
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
+        {!ent.isPro && (
+          <p className="mt-3 text-xs text-fg-muted">
+            Solar and Forest are Pro themes. <ProBadge />
+          </p>
+        )}
       </fieldset>
 
       <fieldset className="mt-4 rounded-lg bg-bg-elevated p-4">
@@ -63,6 +104,36 @@ export default function SettingsPage() {
             </button>
           ))}
         </div>
+      </fieldset>
+
+      <fieldset className="mt-4 rounded-lg bg-bg-elevated p-4">
+        <legend className="flex items-center gap-2 px-1 text-sm font-semibold text-fg-muted">
+          Exam date {!ent.isPro && <ProBadge />}
+        </legend>
+        {ent.isPro ? (
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              type="date"
+              value={prefs.examDate ?? ''}
+              onChange={(e) => setExamDate(e.target.value || null)}
+              className="flex-1 rounded-md border border-divider bg-bg px-3 py-2 text-sm"
+              min={new Date().toISOString().slice(0, 10)}
+            />
+            {prefs.examDate && (
+              <button
+                type="button"
+                onClick={() => setExamDate(null)}
+                className="rounded-md bg-bg px-3 py-2 text-xs font-medium text-fg-muted"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        ) : (
+          <p className="mt-2 text-xs text-fg-muted">
+            Pin your scheduled exam date to your home screen with a Pro upgrade.
+          </p>
+        )}
       </fieldset>
 
       <fieldset className="mt-4 rounded-lg bg-bg-elevated p-4">

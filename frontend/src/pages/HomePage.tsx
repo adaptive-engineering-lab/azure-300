@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ROUTES } from '../lib/routes';
 import { StreakBadge } from '../components/StreakBadge';
 import { XpBadge } from '../components/XpBadge';
+import ExamCountdownWidget from '../components/ExamCountdownWidget';
 import { useAppStore } from '../lib/store';
 import { findDueQuestionIds } from '../lib/dashboard/due';
 import { useDomainCounts } from '../lib/dashboard/useDomainCounts';
@@ -60,6 +61,7 @@ export default function HomePage() {
         </div>
 
         <aside className="flex flex-col gap-3">
+          <ExamCountdownWidget />
           <StreakBadge />
           <XpBadge />
           {dueCount > 0 && (

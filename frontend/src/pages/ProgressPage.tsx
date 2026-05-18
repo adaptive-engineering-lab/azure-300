@@ -8,6 +8,7 @@ import { DOMAIN_LABELS } from '../lib/questions/types';
 import { computeDomainStats, computeActivityCalendar } from '../lib/dashboard/aggregate';
 import { RadarChart } from '../components/RadarChart';
 import { StreakCalendar } from '../components/StreakCalendar';
+import AdvancedStatsPanel from '../components/AdvancedStatsPanel';
 
 export default function ProgressPage() {
   const progress = useAppStore((s) => s.progress);
@@ -139,6 +140,8 @@ export default function ProgressPage() {
           </ul>
         </div>
       )}
+
+      <AdvancedStatsPanel />
 
       <div className="mt-6 rounded-lg bg-bg-elevated p-4">
         <h2 className="text-sm font-semibold">Activity (12 weeks)</h2>

@@ -24,6 +24,7 @@ interface AppState {
   setDefaultSessionLength: (n: SessionLength) => void;
   setDefaultStartingMode: (mode: GameMode | null) => void;
   setReducedMotion: (v: boolean | 'system') => void;
+  setExamDate: (date: string | null) => void;
 
   recordRating: (input: {
     questionId: string;
@@ -82,6 +83,8 @@ export const useAppStore = create<AppState>()(
         set((s) => ({ preferences: { ...s.preferences, defaultStartingMode: mode } })),
       setReducedMotion: (v) =>
         set((s) => ({ preferences: { ...s.preferences, reducedMotion: v } })),
+      setExamDate: (date) =>
+        set((s) => ({ preferences: { ...s.preferences, examDate: date } })),
 
       recordRating: ({ questionId, rating, nextReview, now }) => {
         const ts = (now ?? new Date()).toISOString();

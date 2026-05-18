@@ -10,6 +10,7 @@ export const ROUTES = {
   authCallback: '/auth/callback',
   dailyReview: '/learn/daily-review',
   billing: '/settings/billing',
+  whatsInPro: '/whats-in-pro',
   admin: '/admin',
 } as const;
 
