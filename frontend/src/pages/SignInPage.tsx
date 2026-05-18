@@ -95,6 +95,12 @@ export default function SignInPage() {
         </Link>
         .
       </p>
+      <p className="mt-6 text-xs text-fg-muted">
+        By signing in you agree to the{' '}
+        <Link to={ROUTES.terms} className="text-accent underline">Terms</Link>{' '}
+        and{' '}
+        <Link to={ROUTES.privacy} className="text-accent underline">Privacy Policy</Link>.
+      </p>
     </section>
   );
 }

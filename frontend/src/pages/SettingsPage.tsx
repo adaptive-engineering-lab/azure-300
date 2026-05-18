@@ -160,6 +160,12 @@ export default function SettingsPage() {
           <p className="mt-1 text-xs text-fg-muted">Manage your plan</p>
         </Link>
       )}
+
+      <footer className="mt-8 flex items-center justify-center gap-4 text-xs text-fg-muted">
+        <Link to={ROUTES.privacy} className="hover:text-fg">Privacy</Link>
+        <span aria-hidden>·</span>
+        <Link to={ROUTES.terms} className="hover:text-fg">Terms</Link>
+      </footer>
     </section>
   );
 }

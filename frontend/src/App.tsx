@@ -22,6 +22,8 @@ const AuthCallbackPage = lazy(() => import('./pages/AuthCallbackPage'));
 const DailyReviewPage = lazy(() => import('./pages/DailyReviewPage'));
 const BillingPage = lazy(() => import('./pages/BillingPage'));
 const WhatsInProPage = lazy(() => import('./pages/WhatsInProPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 
 function lazyPage(node: React.ReactNode) {
@@ -47,6 +49,8 @@ const router = createBrowserRouter([
       { path: ROUTES.dailyReview, element: lazyPage(<DailyReviewPage />) },
       { path: ROUTES.billing, element: lazyPage(<BillingPage />) },
       { path: ROUTES.whatsInPro, element: lazyPage(<WhatsInProPage />) },
+      { path: ROUTES.privacy, element: lazyPage(<PrivacyPolicyPage />) },
+      { path: ROUTES.terms, element: lazyPage(<TermsOfServicePage />) },
       { path: ROUTES.admin, element: lazyPage(<AdminPage />) },
       {
         path: '*',
