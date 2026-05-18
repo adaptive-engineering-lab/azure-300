@@ -6,6 +6,7 @@ import { useAppStore, type Rating } from '../lib/store';
 import { computeNextReview } from '../lib/spacing';
 import { findDueQuestionIds, DAILY_REVIEW_CAP } from '../lib/dashboard/due';
 import { ROUTES } from '../lib/routes';
+import SnippetView from '../components/SnippetView';
 
 const OPTIONS = ['A', 'B', 'C', 'D'] as const;
 type Letter = (typeof OPTIONS)[number];
@@ -171,7 +172,7 @@ export default function DailyReviewPage() {
         <div className="h-full bg-accent transition-all" style={{ width: `${((idx + 1) / items.length) * 100}%` }} />
       </div>
       <p className="mb-2 text-xs uppercase tracking-wider text-fg-muted">
-        Daily review · {item.type === 'flashcard' ? 'flashcard' : item.type === 'mcq' ? 'multiple choice' : 'product ID'} · {idx + 1} / {items.length}
+        Daily review · {item.type === 'flashcard' ? 'flashcard' : item.type === 'mcq' ? 'multiple choice' : 'code review'} · {idx + 1} / {items.length}
       </p>
 
       {item.type === 'flashcard' && (
@@ -199,11 +200,22 @@ export default function DailyReviewPage() {
         />
       )}
       {item.type === 'code-review' && (
-        // Code-review dispatcher lands with feature 008. The bank has
-        // no code-review items yet, so the branch is a defensive noop.
-        <div className="rounded-lg bg-bg-elevated p-4 text-sm text-fg-muted">
-          Code Review items can't be reviewed yet — coming with feature 008.
-        </div>
+        <CodeReviewCard
+          snippet={item.content.snippet}
+          language={item.content.language}
+          subMode={item.content.sub_mode}
+          prompt={item.content.prompt}
+          options={item.content.options}
+          correct={item.content.correct}
+          explanation={item.content.explanation}
+          chosen={chosen as Letter | null}
+          showFeedback={showFeedback}
+          onPick={(letter) => {
+            setChosen(letter);
+            setShowFeedback(true);
+          }}
+          onNext={() => commit(chosen === item.content.correct ? 'correct' : 'missed')}
+        />
       )}
     </section>
   );
@@ -280,6 +292,82 @@ function McqCard({
         <div className="mt-4 rounded-md bg-bg-elevated p-4">
           <p className="text-sm"><strong>{chosen === correct ? 'Correct.' : 'Not quite.'}</strong> {explanation}</p>
           <button type="button" onClick={onNext} className="mt-4 w-full rounded-md bg-accent px-4 py-2 font-semibold text-accent-fg">Next</button>
+        </div>
+      )}
+    </>
+  );
+}
+
+function CodeReviewCard({
+  snippet,
+  language,
+  subMode,
+  prompt,
+  options,
+  correct,
+  explanation,
+  chosen,
+  showFeedback,
+  onPick,
+  onNext,
+}: {
+  snippet: string;
+  language: 'python' | 'yaml' | 'bash';
+  subMode: 'find-the-bug' | 'what-does-this-do' | 'fill-the-blank';
+  prompt: string;
+  options: Record<Letter, string>;
+  correct: Letter;
+  explanation: string;
+  chosen: Letter | null;
+  showFeedback: boolean;
+  onPick: (l: Letter) => void;
+  onNext: () => void;
+}) {
+  const themeMode = useAppStore((s) => s.preferences.theme);
+  const revealedValue =
+    showFeedback && subMode === 'fill-the-blank' ? options[correct] : undefined;
+  return (
+    <>
+      <SnippetView
+        snippet={snippet}
+        language={language}
+        themeMode={themeMode}
+        revealedValue={revealedValue}
+      />
+      <p className="mt-4 text-sm font-medium">{prompt}</p>
+      <div className="mt-3 grid gap-2">
+        {OPTIONS.map((letter) => {
+          let cls = 'bg-bg-elevated text-fg';
+          if (showFeedback) {
+            if (letter === correct) cls = 'bg-success/20 text-success ring-1 ring-success';
+            else if (letter === chosen) cls = 'bg-error/20 text-error ring-1 ring-error';
+          }
+          return (
+            <button
+              key={letter}
+              type="button"
+              disabled={showFeedback}
+              onClick={() => onPick(letter)}
+              className={`flex items-start gap-3 rounded-md px-4 py-3 text-left text-sm font-medium ${cls}`}
+            >
+              <span className="font-bold">{letter}.</span>
+              <span className="flex-1">{options[letter]}</span>
+            </button>
+          );
+        })}
+      </div>
+      {showFeedback && (
+        <div className="mt-4 rounded-md bg-bg-elevated p-4">
+          <p className="text-sm">
+            <strong>{chosen === correct ? 'Correct.' : 'Not quite.'}</strong> {explanation}
+          </p>
+          <button
+            type="button"
+            onClick={onNext}
+            className="mt-4 w-full rounded-md bg-accent px-4 py-2 font-semibold text-accent-fg"
+          >
+            Next
+          </button>
         </div>
       )}
     </>
