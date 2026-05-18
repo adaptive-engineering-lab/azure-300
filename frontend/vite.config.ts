@@ -11,7 +11,7 @@ export default defineConfig({
       manifest: {
         name: 'AI-300 Study',
         short_name: 'AI-300',
-        description: 'Mobile-first AI-300 exam prep — flashcards, quizzes, product ID.',
+        description: 'Mobile-first AI-300 exam prep — flashcards, quizzes, code review.',
         theme_color: '#0078D4',
         background_color: '#0f172a',
         display: 'standalone',
