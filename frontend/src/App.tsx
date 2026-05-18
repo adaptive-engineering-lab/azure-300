@@ -1,10 +1,12 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ROUTES } from './lib/routes';
 import { ThemeProvider } from './lib/theme/ThemeProvider';
 import { AuthProvider } from './lib/auth/AuthProvider';
 import { AppShell } from './components/AppShell';
 import HomePage from './pages/HomePage';
+import { useAppStore } from './lib/store';
+import { STATE_KEY } from './lib/storage/namespace';
 
 const LearnIndexPage = lazy(() => import('./pages/LearnIndexPage'));
 const FlashcardSelectPage = lazy(() => import('./pages/FlashcardSelectPage'));
@@ -57,7 +59,20 @@ const router = createBrowserRouter([
   },
 ]);
 
+function useCrossTabStorageSync() {
+  useEffect(() => {
+    function onStorage(e: StorageEvent) {
+      if (e.key === STATE_KEY) {
+        useAppStore.persist.rehydrate();
+      }
+    }
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+}
+
 export function App() {
+  useCrossTabStorageSync();
   return (
     <AuthProvider>
       <ThemeProvider>

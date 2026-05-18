@@ -95,6 +95,23 @@ export default function ProgressPage() {
         <Tile label="Accuracy" value={overallPct} suffix="%" />
       </div>
 
+      {sessions[0] && (
+        <div className="mt-4 rounded-lg bg-bg-elevated p-4">
+          <h2 className="text-sm font-semibold">Most recent session</h2>
+          <p className="mt-1 text-sm">
+            <span className="capitalize">{sessions[0].mode.replace('-', ' ')}</span>
+            {sessions[0].scorePct !== null && (
+              <>
+                {' · '}
+                <span className="font-medium">{sessions[0].scorePct}%</span>
+              </>
+            )}
+            {' · '}
+            <span className="text-fg-muted">{formatRelative(sessions[0].completedAt)}</span>
+          </p>
+        </div>
+      )}
+
       <div className="mt-6 rounded-lg bg-bg-elevated p-4">
         <h2 className="text-sm font-semibold">By domain</h2>
         <div className="mt-4 flex justify-center">
@@ -112,10 +129,10 @@ export default function ProgressPage() {
                   {DOMAIN_LABELS[w.domain]} — {w.pct}%
                 </span>
                 <Link
-                  to={`${ROUTES.flashcards}/session?domain=${w.domain}&length=10`}
+                  to={`${ROUTES.quiz}?domain=${w.domain}`}
                   className="rounded-md bg-bg-elevated px-3 py-1 text-xs font-medium text-fg"
                 >
-                  Review
+                  Practice
                 </Link>
               </li>
             ))}
@@ -134,6 +151,18 @@ export default function ProgressPage() {
       </div>
     </section>
   );
+}
+
+function formatRelative(iso: string): string {
+  const ms = Date.now() - Date.parse(iso);
+  const mins = Math.round(ms / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.round(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(iso).toLocaleDateString();
 }
 
 function Tile({ label, value, suffix }: { label: string; value: number; suffix?: string }) {
