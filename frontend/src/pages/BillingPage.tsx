@@ -1,11 +1,52 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../lib/auth/AuthProvider';
 import { useEntitlement } from '../lib/entitlement';
 import { ROUTES } from '../lib/routes';
+import { startCheckout, openCustomerPortal } from '../lib/billing/checkout';
 
 export default function BillingPage() {
   const { user } = useAuth();
   const ent = useEntitlement();
+  const [params, setParams] = useSearchParams();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    const status = params.get('status');
+    if (status === 'success') {
+      setToast('Pro activated. It may take a few seconds to reflect here.');
+      params.delete('status');
+      setParams(params, { replace: true });
+    } else if (status === 'canceled') {
+      setToast('Checkout canceled. Nothing was charged.');
+      params.delete('status');
+      setParams(params, { replace: true });
+    }
+  }, [params, setParams]);
+
+  async function onUpgrade() {
+    setError(null);
+    setBusy(true);
+    try {
+      await startCheckout();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Checkout failed.');
+      setBusy(false);
+    }
+  }
+
+  async function onManage() {
+    setError(null);
+    setBusy(true);
+    try {
+      await openCustomerPortal();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not open the portal.');
+      setBusy(false);
+    }
+  }
 
   if (!user) {
     return (
@@ -54,6 +95,10 @@ export default function BillingPage() {
         <h1 className="text-2xl font-bold">Billing</h1>
       </header>
 
+      {toast && (
+        <div className="mb-4 rounded-lg bg-accent/10 p-3 text-sm ring-1 ring-accent">{toast}</div>
+      )}
+
       <div className="rounded-lg bg-bg-elevated p-4">
         <p className="text-sm font-semibold">{ent.isPro ? 'Pro' : 'Free'}</p>
         <p className="mt-1 text-sm text-fg-muted">
@@ -77,16 +122,26 @@ export default function BillingPage() {
           <li>Advanced stats on the progress dashboard</li>
           <li>Exam-day countdown widget</li>
         </ul>
-        {!ent.isPro && (
+        {ent.isPro ? (
           <button
             type="button"
-            disabled
-            title="Stripe checkout wiring lands in a follow-up"
-            className="mt-4 w-full rounded-md bg-accent/40 px-4 py-2 text-sm font-semibold text-accent-fg disabled:cursor-not-allowed"
+            onClick={onManage}
+            disabled={busy}
+            className="mt-4 w-full rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-fg disabled:opacity-50"
           >
-            Upgrade — coming soon
+            {busy ? 'Opening…' : 'Manage subscription'}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onUpgrade}
+            disabled={busy}
+            className="mt-4 w-full rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-fg disabled:opacity-50"
+          >
+            {busy ? 'Redirecting…' : 'Upgrade to Pro'}
           </button>
         )}
+        {error && <p className="mt-2 text-xs text-error">{error}</p>}
       </div>
     </section>
   );
