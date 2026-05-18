@@ -27,7 +27,7 @@ export default function HomePage() {
               Mobile-first prep for the ML Operations Engineer exam.
             </h1>
             <p className="mt-3 text-fg-muted">
-              Flashcards, quizzes, and product-ID drills across all five exam domains. Study in
+              Flashcards, quizzes, and code-review drills across all five exam domains. Study in
               short sessions; come back tomorrow.
             </p>
             {!countsLoading && bankSize > 0 && (
