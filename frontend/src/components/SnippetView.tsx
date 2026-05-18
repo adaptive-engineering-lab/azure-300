@@ -44,13 +44,14 @@ function getHighlighter(): Promise<ShikiInstance> {
 interface Props {
   snippet: string;
   language: CodeReviewLanguage;
-  themeMode: 'dark' | 'light';
+  /** App theme. Light → github-light. Anything else → github-dark. */
+  themeMode: 'dark' | 'light' | 'solar' | 'forest';
   revealedValue?: string;
 }
 
 export default function SnippetView({ snippet, language, themeMode, revealedValue }: Props) {
   const [parts, setParts] = useState<{ before: string; after: string | null } | null>(null);
-  const theme = themeMode === 'dark' ? 'github-dark' : 'github-light';
+  const theme = themeMode === 'light' ? 'github-light' : 'github-dark';
 
   const sourceParts = splitSnippet(snippet, revealedValue);
 

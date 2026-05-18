@@ -33,6 +33,34 @@
     --color-divider: 220 10% 18%;
   }
 
+  /* Pro theme: Solar — warm amber-on-deep-navy. Higher contrast accent. */
+  html.solar {
+    --color-bg: 230 30% 10%;
+    --color-bg-elevated: 230 28% 15%;
+    --color-fg: 40 30% 95%;
+    --color-fg-muted: 40 15% 70%;
+    --color-accent: 35 100% 60%;
+    --color-accent-fg: 230 40% 8%;
+    --color-success: 140 50% 55%;
+    --color-warning: 25 90% 60%;
+    --color-error: 0 75% 60%;
+    --color-divider: 230 20% 22%;
+  }
+
+  /* Pro theme: Forest — desaturated greens on deep moss. */
+  html.forest {
+    --color-bg: 145 20% 8%;
+    --color-bg-elevated: 145 18% 12%;
+    --color-fg: 100 15% 92%;
+    --color-fg-muted: 100 10% 65%;
+    --color-accent: 130 50% 55%;
+    --color-accent-fg: 145 25% 8%;
+    --color-success: 150 55% 60%;
+    --color-warning: 40 85% 60%;
+    --color-error: 0 70% 60%;
+    --color-divider: 145 15% 20%;
+  }
+
   html, body {
     min-height: 100%;
   }
