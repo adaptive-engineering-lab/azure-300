@@ -1,20 +1,9 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../lib/routes';
 
-/**
- * Privacy Policy template. This is NOT legal advice. Before launch:
- *   - Replace every [OPERATOR_*] placeholder with your real values.
- *   - Confirm the storage region matches your Supabase project (az-103 is
- *     "West EU (Ireland)" → covered by the EU disclosure).
- *   - If you serve EU residents, GDPR applies regardless of where you live.
- *   - If you serve California residents, CCPA / CPRA applies.
- *   - Have a lawyer review before you onboard real users.
- */
 export default function PrivacyPolicyPage() {
   return (
     <article className="mx-auto w-full max-w-2xl prose-sm">
-      <Banner />
-
       <header className="mb-6">
         <h1 className="text-2xl font-bold">Privacy Policy</h1>
         <p className="mt-1 text-xs text-fg-muted">Last updated: 2026-05-18</p>
@@ -23,11 +12,12 @@ export default function PrivacyPolicyPage() {
       <Section title="1. Who we are">
         <p>
           AI-300 Study (the &ldquo;Service&rdquo;) is operated by{' '}
-          <span className="font-mono text-xs">[OPERATOR_NAME]</span>
-          {' ('}
-          <span className="font-mono text-xs">[OPERATOR_LEGAL_ENTITY_OR_INDIVIDUAL]</span>
-          {'). You can reach us at '}
-          <span className="font-mono text-xs">[OPERATOR_CONTACT_EMAIL]</span>.
+          <strong>Adaptive Engineering Lab</strong>, a brand of Lanre Adetola
+          operating as an individual based in Belgium. You can reach us at{' '}
+          <a href="mailto:ladetola0@gmail.com" className="text-accent underline">
+            ladetola0@gmail.com
+          </a>
+          .
         </p>
         <p className="mt-2">
           This policy explains what personal data we collect when you use the
@@ -87,9 +77,7 @@ export default function PrivacyPolicyPage() {
         <p>
           The Service uses Supabase (a Postgres-backed BaaS) as its primary
           data store. Our Supabase project is hosted in{' '}
-          <span className="font-mono text-xs">[SUPABASE_REGION]</span>{' '}
-          (currently &ldquo;West EU &mdash; Ireland&rdquo; for the active
-          deployment).
+          West EU (Ireland).
         </p>
         <p className="mt-2">
           Billing data, when applicable, is stored by Stripe under their own
@@ -160,7 +148,9 @@ export default function PrivacyPolicyPage() {
         </ul>
         <p className="mt-2">
           For access, correction, or export requests, email{' '}
-          <span className="font-mono text-xs">[OPERATOR_CONTACT_EMAIL]</span>{' '}
+          <a href="mailto:ladetola0@gmail.com" className="text-accent underline">
+            ladetola0@gmail.com
+          </a>{' '}
           and we&rsquo;ll respond within 30 days.
         </p>
       </Section>
@@ -187,7 +177,9 @@ export default function PrivacyPolicyPage() {
           The Service is intended for users aged 16 and over. We do not
           knowingly collect personal data from anyone under 16. If you
           believe a child has signed up, contact{' '}
-          <span className="font-mono text-xs">[OPERATOR_CONTACT_EMAIL]</span>{' '}
+          <a href="mailto:ladetola0@gmail.com" className="text-accent underline">
+            ladetola0@gmail.com
+          </a>{' '}
           and we&rsquo;ll delete the account.
         </p>
       </Section>
@@ -204,7 +196,10 @@ export default function PrivacyPolicyPage() {
       <Section title="11. Contact">
         <p>
           Questions, requests, complaints:{' '}
-          <span className="font-mono text-xs">[OPERATOR_CONTACT_EMAIL]</span>.
+          <a href="mailto:ladetola0@gmail.com" className="text-accent underline">
+            ladetola0@gmail.com
+          </a>
+          .
         </p>
       </Section>
 
@@ -212,24 +207,6 @@ export default function PrivacyPolicyPage() {
         See also: <Link to={ROUTES.terms} className="text-accent underline">Terms of Service</Link>.
       </p>
     </article>
-  );
-}
-
-function Banner() {
-  return (
-    <div className="mb-6 rounded-lg bg-warning/10 p-3 ring-1 ring-warning/40">
-      <p className="text-xs font-semibold text-warning">
-        TEMPLATE &mdash; remove this banner once the policy has been filled in
-        and reviewed by a lawyer.
-      </p>
-      <p className="mt-1 text-xs text-fg-muted">
-        Replace every bracketed placeholder
-        (<span className="font-mono">[OPERATOR_NAME]</span>,{' '}
-        <span className="font-mono">[OPERATOR_CONTACT_EMAIL]</span>, etc.)
-        with your real values. Confirm the Supabase region. Have a lawyer
-        review before launch &mdash; this is not legal advice.
-      </p>
-    </div>
   );
 }
 
