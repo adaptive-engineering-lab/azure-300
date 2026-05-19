@@ -193,5 +193,395 @@
       "front": "When should you fine-tune a model instead of using RAG?",
       "back": "Fine-tune when you need a consistent style, tone, or output format the base model doesn't reliably produce; when you need to teach a fixed, slow-changing skill (classification labels, structured extraction); or when prompt engineering hits cost/latency ceilings. Prefer RAG when the knowledge is large, frequently updated, or must be auditable — fine-tuning bakes facts into weights and is expensive to refresh."
     }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000016",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "Notebooks",
+    "difficulty": 1,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "notebooks", "level-1"],
+    "content": {
+      "front": "What kernel should you use on a compute instance to import the Azure ML v2 SDK?",
+      "back": "Select the `python310-sdkv2` kernel. It ships with `azure-ai-ml` (the v2 SDK) pre-installed. The older `azureml_py38` kernel targets the v1 SDK and doesn't include v2 by default; using it forces a `pip install azure-ai-ml` step the team will forget."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000017",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "Training Scripts",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "training-scripts", "level-2"],
+    "content": {
+      "front": "How are command-job inputs passed to a Python training script?",
+      "back": "Inputs declared on the CommandJob (under `inputs:`) are injected into the `command` field via `${{inputs.<name>}}` substitution. The script parses them with argparse. Primitive inputs (string, number, boolean) arrive as literal CLI args; `uri_folder` / `uri_file` / `mltable` inputs are mounted (or downloaded) and the substitution becomes the local path."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000018",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "Distributed Training",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "distributed-training", "level-2"],
+    "content": {
+      "front": "How do you launch PyTorch DDP from an Azure ML command job?",
+      "back": "Set `distribution.type='pytorch'` and `process_count_per_instance=<gpus-per-node>` on the CommandJob. Azure ML wraps your script with `torchrun` and sets `MASTER_ADDR`, `MASTER_PORT`, `RANK`, and `WORLD_SIZE` automatically. Inside the script call `torch.distributed.init_process_group('nccl')` then proceed with DDP wrapping."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000019",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "Batch Endpoints",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "batch-endpoints", "level-2"],
+    "content": {
+      "front": "When should you use a batch endpoint instead of an online endpoint?",
+      "back": "Use a batch endpoint when scoring large datasets asynchronously — you submit a job, it runs on a compute cluster (scaling from 0 between jobs), and writes results to a registered data asset. Online endpoints are for real-time, low-latency single-request scoring. Pick batch when latency doesn't matter, requests are large, or you want to scale to zero between jobs to control cost."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000020",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "Progressive Rollout",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "progressive-rollout", "level-2"],
+    "content": {
+      "front": "How do you shift traffic between deployments on a managed online endpoint?",
+      "back": "Update the endpoint's `traffic` percentage dict, e.g. `traffic={'blue': 90, 'green': 10}`. Adjust in steps (e.g. 10% → 50% → 100%) and watch latency, success rate, and business metrics between steps. The Azure CLI form is `az ml online-endpoint update --traffic 'blue=90 green=10'`. The two percentages must sum to 100."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000021",
+    "type": "flashcard",
+    "domain": "ml-lifecycle",
+    "topic": "Responsible AI",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "responsible-ai", "level-2"],
+    "content": {
+      "front": "What does the Error Analysis component of the Responsible AI dashboard show?",
+      "back": "Error Analysis surfaces cohorts of the dataset where the model performs worse than its overall metrics suggest. It builds a decision-tree-like view, splitting on feature values, so you can find disparate-impact problems or systematic blind spots a single accuracy number would hide. Enable it as a flag when running the RAI insights pipeline; it complements (does not replace) feature importance and counterfactual analysis."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000022",
+    "type": "flashcard",
+    "domain": "mlops-infra",
+    "topic": "IAM",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "iam", "level-2"],
+    "content": {
+      "front": "Which Azure ML built-in role lets data scientists work without granting admin?",
+      "back": "AzureML Data Scientist. It grants read on the workspace plus full CRUD on assets (datastores, datasets, environments, components, models) and the ability to submit jobs — but not workspace admin operations like managing compute or assigning roles. Use AzureML Compute Operator for managing compute clusters separately. Owner / Contributor are too broad for most analysts."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000023",
+    "type": "flashcard",
+    "domain": "mlops-infra",
+    "topic": "Data Assets",
+    "difficulty": 1,
+    "source": "bank",
+    "tags": ["mlops-infra", "data-assets", "level-1"],
+    "content": {
+      "front": "What asset types can a registered Azure ML data asset have?",
+      "back": "Three types: `uri_file` (one file), `uri_folder` (a directory of files), and `mltable` (files plus a schema and optional transformations). AutoML and data-drift monitors require `mltable` because they need column types. Most training scripts use `uri_folder` so the script controls how files are read into the trainer."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000024",
+    "type": "flashcard",
+    "domain": "mlops-infra",
+    "topic": "Components",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "components", "level-2"],
+    "content": {
+      "front": "What is an Azure ML component, and why use one?",
+      "back": "A component is a versioned, reusable building block of a pipeline. It declares typed `inputs:`, `outputs:`, a `command:` (or container `code:`), and an `environment:`. Once registered, multiple pipelines reference it (`azureml:my-comp:3`) without copying code. Components separate `what` (interface + code) from `how` (compute + inputs the pipeline binds at runtime)."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000025",
+    "type": "flashcard",
+    "domain": "mlops-infra",
+    "topic": "Environments",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "environments", "level-2"],
+    "content": {
+      "front": "Curated vs custom environment — when do you pick each?",
+      "back": "Curated environments are Microsoft-maintained images (e.g., `azureml://registries/azureml/environments/sklearn-1.5`) — fast to pull, kept patched. Use them when your dependencies match. Custom environments are conda.yml + Docker images you register yourself — needed when you have specific package versions or system dependencies. Pin custom-environment versions in your jobs so dependency drift doesn't break runs."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000026",
+    "type": "flashcard",
+    "domain": "mlops-infra",
+    "topic": "Registries",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "registries", "level-2"],
+    "content": {
+      "front": "How does an Azure ML registry replicate models across regions?",
+      "back": "A registry is created in a primary region; you declare additional `regions:` at creation time. The registry asynchronously replicates registered models, environments, components, and data assets to those regions. Compute in any listed region can pull from the local replica, reducing job startup latency. Use registries (not per-workspace registration) whenever you have workspaces in multiple geographies sharing assets."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000027",
+    "type": "flashcard",
+    "domain": "genaiops-infra",
+    "topic": "Network Security",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "network-security", "level-2"],
+    "content": {
+      "front": "How do you isolate an Azure AI Foundry hub from the public internet?",
+      "back": "Set `publicNetworkAccess: Disabled` on the hub and on every linked resource (storage, Key Vault, AI Services, AI Search). Create private endpoints for each in a VNet. Enable the hub's managed VNet so compute and endpoints automatically join an isolated network. Without private endpoints, flows hang on first run because outbound calls to the linked resources time out."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000028",
+    "type": "flashcard",
+    "domain": "genaiops-infra",
+    "topic": "Bicep",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "bicep", "level-2"],
+    "content": {
+      "front": "Bicep deployment order for a Foundry hub + project + connection?",
+      "back": "Hub first, then project (which references `hubResourceId: hub.id`), then connections (children of either hub or project). The hub owns shared infrastructure storage/Key Vault/AI Services that the project inherits. Bicep infers ordering from `.id` references, so reference `hub.id` rather than passing the hub name as a string — implicit dependsOn breaks if you flatten to strings."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000029",
+    "type": "flashcard",
+    "domain": "genaiops-infra",
+    "topic": "Model Catalog",
+    "difficulty": 1,
+    "source": "bank",
+    "tags": ["genaiops-infra", "model-catalog", "level-1"],
+    "content": {
+      "front": "What is the Azure AI Foundry Model Catalog?",
+      "back": "A curated marketplace of foundation models — Azure OpenAI (GPT-4, GPT-4o), Microsoft (Phi family), Meta (Llama), Mistral, Cohere, and many more. For each model the catalog shows context length, modality, available deployment options (serverless / managed compute / PTU), and pricing. Deploy a model from the catalog to a Foundry project, which exposes a chat or completion endpoint."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000030",
+    "type": "flashcard",
+    "domain": "genaiops-infra",
+    "topic": "Managed Compute",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "managed-compute", "level-2"],
+    "content": {
+      "front": "Managed compute vs serverless endpoint for Foundry models — when do you use each?",
+      "back": "Serverless (pay-per-token) endpoints have no infrastructure to manage; great for prototyping, low/spiky traffic, or models that only ship serverless. Managed compute runs on a VM SKU you pick — control GPU type, isolation, scale, and the option to serve fine-tuned or self-hosted open-source models. Use managed compute when serverless can't meet latency, isolation, or fine-tuning needs."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000031",
+    "type": "flashcard",
+    "domain": "genaiops-infra",
+    "topic": "Prompt Versioning",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "prompt-versioning", "level-2"],
+    "content": {
+      "front": "How do you version a prompt flow as it evolves?",
+      "back": "Check the entire flow folder (`flow.dag.yaml`, prompt templates, tool code) into Git. Commit history IS the version history. For production, create flow snapshots — Azure ML promotes the working copy to a registered, immutable artifact you reference from an endpoint. Git for branching/PRs, snapshots for what production runs. Endpoints do NOT pull from Git on each request."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000032",
+    "type": "flashcard",
+    "domain": "genaiops-infra",
+    "topic": "RBAC",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "rbac", "level-2"],
+    "content": {
+      "front": "Hub Owner vs Project Reader — what's the practical difference?",
+      "back": "Hub Owner can manage shared connections, network config, and role assignments across every project under the hub. Project Reader sees a single project's assets but can't create flows or deployments. Most engineers need Azure AI Developer at project scope — manage flows + endpoints inside their project without touching hub-level settings. Reserve Hub Owner for the small admin group."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000033",
+    "type": "flashcard",
+    "domain": "genai-quality",
+    "topic": "Evaluation Metrics",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "evaluation-metrics", "level-2"],
+    "content": {
+      "front": "AI-assisted vs traditional evaluation metrics — what's the difference?",
+      "back": "Traditional metrics (ROUGE, BLEU, F1, exact match) compare a response against a reference using token-overlap heuristics. AI-assisted metrics (Groundedness, Relevance, Coherence, Fluency) use a judge LLM (or a hosted Pro service) to score qualitative properties — does the answer match the context, is it on-topic, does it read well. Use traditional metrics when you have a single reference; AI-assisted when the right answer is open-ended."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000034",
+    "type": "flashcard",
+    "domain": "genai-quality",
+    "topic": "Test Datasets",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "test-datasets", "level-2"],
+    "content": {
+      "front": "What format does Foundry expect for an evaluation dataset?",
+      "back": "JSONL — one JSON object per line. Each line has the keys the evaluator needs: `query` (the question), `response` (the model's answer), and typically `context` (retrieved chunks) and `ground_truth` (the reference answer). Different evaluators require different keys: Groundedness needs context, Relevance needs query+response, F1 needs response+ground_truth. Build one JSONL with all keys and the evaluator picks what it needs."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000035",
+    "type": "flashcard",
+    "domain": "genai-quality",
+    "topic": "Relevance",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "relevance", "level-2"],
+    "content": {
+      "front": "What does the Relevance evaluator score?",
+      "back": "How well a response addresses the user's query — is it on-topic, does it answer what was asked, does it avoid going off on a tangent. Returns a 1–5 score (5 = highly relevant). Inputs: `query` and `response`. Unlike Groundedness (which checks support by context), Relevance is about query/response alignment regardless of retrieval. Pair both for RAG quality."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000036",
+    "type": "flashcard",
+    "domain": "genai-quality",
+    "topic": "Tracing",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "tracing", "level-2"],
+    "content": {
+      "front": "How does Azure AI Foundry trace prompt flow executions?",
+      "back": "Each flow run produces an OpenTelemetry trace; each node in the flow becomes a span with inputs, outputs, latency, and token counts. Spans roll up into a single trace per request. Traces are exported to the project's Application Insights resource and visible in the Foundry portal's trace viewer or via Log Analytics KQL queries on the `traces` and `customEvents` tables."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000037",
+    "type": "flashcard",
+    "domain": "genai-quality",
+    "topic": "Token Cost",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "token-cost", "level-2"],
+    "content": {
+      "front": "How do you track per-request token cost in a Foundry deployment?",
+      "back": "Application Insights captures `prompt_tokens` and `completion_tokens` on every LLM span. Query `traces | where name == 'llm' | summarize sum(customDimensions.prompt_tokens), sum(customDimensions.completion_tokens) by bin(timestamp, 1h)` to see hourly token consumption. Multiply by the model's per-token price for cost. Set a budget alert on the App Insights resource for soft limits."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000038",
+    "type": "flashcard",
+    "domain": "genai-quality",
+    "topic": "Continuous Monitoring",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "continuous-monitoring", "level-2"],
+    "content": {
+      "front": "How does Foundry continuously evaluate a deployed flow's quality?",
+      "back": "Configure an online evaluation job on the deployment: a scheduled (e.g., hourly) sampler that pulls recent traces, runs evaluators (Groundedness, Relevance, etc.), and writes scores back to App Insights as new spans. Threshold alerts on the score metrics fire when quality drifts below your bar. Sampling rate is configurable to control cost."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000039",
+    "type": "flashcard",
+    "domain": "genai-optimization",
+    "topic": "Chunk Size",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "chunk-size", "level-2"],
+    "content": {
+      "front": "What's a typical chunk-size starting point for RAG over technical docs?",
+      "back": "500–800 tokens with 10–20% overlap. Smaller chunks (200–400) give precise retrieval but fragment context across calls; larger chunks (1.5k+) keep context together but reduce embedding precision and increase prompt cost. The right value depends on document structure and the model's context budget — start at 600, tune against an eval set, never blindly pick small or large."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000040",
+    "type": "flashcard",
+    "domain": "genai-optimization",
+    "topic": "Similarity Threshold",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "similarity-threshold", "level-2"],
+    "content": {
+      "front": "What's the tradeoff when raising a vector-search similarity threshold?",
+      "back": "Higher threshold = fewer chunks returned but each one more topically aligned (higher precision, lower recall). Lower threshold = more chunks pass, broader coverage, but more noise — the LLM has to filter out off-topic context. Tune on a labelled eval set: measure recall@K and precision@K, then pick the threshold that optimizes downstream answer quality, not raw retrieval metrics."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000041",
+    "type": "flashcard",
+    "domain": "genai-optimization",
+    "topic": "Embedding Models",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "embedding-models", "level-2"],
+    "content": {
+      "front": "`text-embedding-3-large` vs `text-embedding-3-small` — when do you pick each?",
+      "back": "`-large` (3072 dims) gives better retrieval quality, especially on long-tail or multilingual content, but costs more per token and uses more storage/RAM in the vector store. `-small` (1536 dims) is half the price and adequate for most English-text RAG. Both support Matryoshka dimension truncation — you can store fewer dims to save storage at modest quality loss. Benchmark before picking."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000042",
+    "type": "flashcard",
+    "domain": "genai-optimization",
+    "topic": "Synthetic Data",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "synthetic-data", "level-2"],
+    "content": {
+      "front": "How does synthetic-data generation help fine-tune or evaluate a model?",
+      "back": "You use a strong LLM to generate input/output pairs that match the target distribution: questions from your documents (for RAG eval), instructions paired with model-completed responses (for SFT), or rejected/preferred pairs (for DPO). Synthetic data fills gaps where you don't have labelled human data. Always audit a sample for accuracy and diversity before training or evaluating against it."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000043",
+    "type": "flashcard",
+    "domain": "genai-optimization",
+    "topic": "A/B Testing",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "a-b-testing", "level-2"],
+    "content": {
+      "front": "How do you A/B test two prompt variants behind a Foundry deployment?",
+      "back": "Deploy variant B as a second deployment on the same managed online endpoint, then set `traffic={'a': 90, 'b': 10}` to route 10% to B. Tag each request with the deployment that served it (the response header `X-Azure-Ml-Deployment` already does this) and compare downstream success/quality metrics in App Insights. Promote B by shifting traffic gradually; roll back by reverting traffic to A=100."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000044",
+    "type": "flashcard",
+    "domain": "mlops-infra",
+    "topic": "IaC",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "iac", "level-2"],
+    "content": {
+      "front": "Bicep vs Terraform for an Azure-only ML stack — practical tradeoff?",
+      "back": "Bicep is Azure-native, deploys via ARM, and Microsoft ships first-party Bicep modules for Azure ML and Foundry — new Azure features land there first. Terraform is multi-cloud, uses the AzureRM provider, and has a deeper state-management ecosystem. For an Azure-only stack, pick Bicep. Pick Terraform when the org has existing Terraform pipelines or genuine multi-cloud needs."
+    }
+  },
+  {
+    "id": "11111111-1111-4111-8111-000000000045",
+    "type": "flashcard",
+    "domain": "genai-optimization",
+    "topic": "Fine-tuned Model Deployment",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "fine-tuned-model-deployment", "level-2"],
+    "content": {
+      "front": "Where do you deploy a fine-tuned model — serverless, managed compute, or PTU?",
+      "back": "Azure-OpenAI fine-tunes (e.g., gpt-35-turbo fine-tune) deploy as Provisioned Throughput Units (or as a fine-tune-specific deployment) within the Azure OpenAI resource — no managed-compute option. Foundry open-source fine-tunes (LoRA adapters on Llama, Mistral, etc.) deploy to managed compute, with the adapter loaded on top of the base model. Serverless deployment of custom fine-tunes is not generally available; check the catalog per model."
+    }
   }
 ]

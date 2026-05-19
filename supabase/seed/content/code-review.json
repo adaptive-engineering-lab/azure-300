@@ -228,5 +228,465 @@
       "correct": "A",
       "explanation": "Hybrid search requires BOTH `search_text` (BM25 lexical) AND `vector_queries` (vector similarity). Passing `search_text=None` makes it pure vector search and misses documents that BM25 would catch on exact keyword matches. The fields and `top` parameter are valid; KNN of 5 is fine."
     }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000011",
+    "type": "code-review",
+    "domain": "ml-lifecycle",
+    "topic": "Distributed Training",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "distributed-training", "level-3", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.ml import command\nfrom azure.ai.ml.entities import PyTorchDistribution\n\njob = command(\n    code=\"./src\",\n    command=\"python train.py\",\n    compute=\"cpu-cluster\",\n    environment=\"azureml://registries/azureml/environments/pytorch-2.1\",\n    instance_count=2,\n    distribution=PyTorchDistribution(process_count_per_instance=4),\n)",
+      "prompt": "Why will this distributed PyTorch job fail to launch?",
+      "options": {
+        "A": "`PyTorchDistribution` must come from `azure.ai.ml.sweep`, not entities",
+        "B": "`compute='cpu-cluster'` cannot host a `process_count_per_instance=4` PyTorch DDP job — DDP with NCCL requires a GPU cluster",
+        "C": "`instance_count=2` is the minimum but DDP only runs on a single node",
+        "D": "`command='python train.py'` must use `torchrun` directly"
+      },
+      "correct": "B",
+      "explanation": "Multi-process PyTorch DDP almost always uses the NCCL backend, which requires GPUs (and high-bandwidth interconnects between them). `cpu-cluster` has no GPUs, so the NCCL init call inside `init_process_group` fails before training begins. Multi-node DDP is supported. The launcher (torchrun) is wrapped by Azure ML — you do not invoke it yourself."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000012",
+    "type": "code-review",
+    "domain": "ml-lifecycle",
+    "topic": "Progressive Rollout",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "progressive-rollout", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "yaml",
+      "snippet": "$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineEndpoint.schema.json\nname: churn-endpoint\nauth_mode: key\ntraffic:\n  blue: 60\n  green: 30\nmirror_traffic: {}\n",
+      "prompt": "Why is this endpoint update rejected at submit time?",
+      "options": {
+        "A": "Traffic percentages must sum to 100; here they total 90",
+        "B": "`auth_mode: key` is deprecated; use `aad_token`",
+        "C": "`mirror_traffic` cannot be an empty object",
+        "D": "Deployments must be listed under a `deployments:` key, not `traffic:`"
+      },
+      "correct": "A",
+      "explanation": "The endpoint API requires the values under `traffic:` to sum to exactly 100. Here blue + green = 90, so the update is rejected at submit time. `auth_mode: key` is still valid (alongside aad_token / aml_token). `mirror_traffic: {}` is fine as an empty map. The `traffic:` block IS the deployment-to-percentage mapping — there's no separate `deployments:` key."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000013",
+    "type": "code-review",
+    "domain": "ml-lifecycle",
+    "topic": "Batch Endpoints",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "batch-endpoints", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.ml.entities import BatchDeployment, BatchRetrySettings\nfrom azure.ai.ml.constants import BatchDeploymentOutputAction\n\ndeployment = BatchDeployment(\n    name=\"daily-score\",\n    endpoint_name=\"customer-churn-batch\",\n    model=\"azureml:churn-model@latest\",\n    compute=\"batch-cluster\",\n    output_action=BatchDeploymentOutputAction.SUMMARY_ONLY,\n    instance_count=2,\n    max_concurrency_per_instance=4,\n)",
+      "prompt": "The scoring script writes one prediction row per input record, but the output file has only a count. Why?",
+      "options": {
+        "A": "`max_concurrency_per_instance=4` overwrites earlier writes",
+        "B": "`output_action=SUMMARY_ONLY` discards per-row predictions; use `APPEND_ROW` to capture each scored row",
+        "C": "`instance_count=2` shards the output file and only the last shard survives",
+        "D": "Batch deployments don't support per-row outputs — switch to an online deployment"
+      },
+      "correct": "B",
+      "explanation": "`SUMMARY_ONLY` writes a single summary file containing aggregate counts; per-row predictions are dropped. `APPEND_ROW` is the right setting when the scoring script's `run()` returns one or more rows per input. Concurrency and instance_count affect throughput, not output shape; batch endpoints DO support per-row outputs via APPEND_ROW."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000014",
+    "type": "code-review",
+    "domain": "ml-lifecycle",
+    "topic": "Model Registration",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["ml-lifecycle", "model-registration", "level-2", "fill-the-blank"],
+    "content": {
+      "sub_mode": "fill-the-blank",
+      "language": "python",
+      "snippet": "import mlflow\n\nwith mlflow.start_run() as run:\n    # ... training ...\n    mlflow.sklearn.log_model(model, artifact_path=\"model\")\n\n    mlflow.register_model(\n        model_uri=\"___BLANK___\",\n        name=\"churn-classifier\",\n    )",
+      "prompt": "Which URI registers the model logged in the active MLflow run?",
+      "options": {
+        "A": "models://workspace/churn-classifier/latest",
+        "B": "f\"runs:/{run.info.run_id}/model\"",
+        "C": "azureml:churn-classifier@latest",
+        "D": "s3://my-bucket/sklearn-model.pkl"
+      },
+      "correct": "B",
+      "explanation": "`runs:/<run_id>/<artifact_path>` is MLflow's canonical URI scheme for artifacts logged inside a run. The `<artifact_path>` matches what was passed to `log_model` (here, `\"model\"`). `azureml:...@latest` references an already-registered model, not a new one. `models://workspace/...` is not a real scheme. S3 paths aren't supported by Azure ML's MLflow integration."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000015",
+    "type": "code-review",
+    "domain": "mlops-infra",
+    "topic": "Datastores",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "datastores", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "yaml",
+      "snippet": "$schema: https://azuremlschemas.azureedge.net/latest/azureBlob.schema.json\nname: ml_blob\ntype: azure_blob\ndescription: Default blob datastore for the workspace\naccount_name: mlblobaccount.blob.core.windows.net\ncontainer_name: ml-data\ncredentials:\n  account_key: $STORAGE_KEY\n",
+      "prompt": "Why does `az ml datastore create -f this.yml` fail validation?",
+      "options": {
+        "A": "account_name must be the storage account name only (e.g., 'mlblobaccount'), not the full hostname",
+        "B": "credentials cannot use environment-variable interpolation; embed the key as a literal",
+        "C": "type must be 'azureblob' (no underscore)",
+        "D": "description is a required field and cannot exceed 80 characters"
+      },
+      "correct": "A",
+      "explanation": "`account_name` is the bare storage account name; Azure ML constructs the FQDN itself based on the cloud (public vs sovereign). Passing the hostname produces an invalid resource path. Env-var interpolation in `credentials` is supported. `type: azure_blob` is the correct enum value (note the underscore). `description` is optional."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000016",
+    "type": "code-review",
+    "domain": "mlops-infra",
+    "topic": "Components",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "components", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "yaml",
+      "snippet": "$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json\nname: prep-data\ndisplay_name: Prepare data\nversion: 1\ntype: command\ninputs:\n  raw_data:\n    type: uri_folder\noutputs:\n  cleaned:\n    type: uri_folder\nenvironment: azureml://registries/azureml/environments/sklearn-1.5/labels/latest\ncode: ./src\ncommand: >-\n  python prep.py\n  --raw ${{inputs.raw_data}}\n  --out ${{outputs.processed_data}}\n",
+      "prompt": "Why is this component rejected at submit time?",
+      "options": {
+        "A": "`command` references `${{outputs.processed_data}}` but the declared output is named `cleaned` — unresolved binding",
+        "B": "type must be `command_component`, not `command`",
+        "C": "`code` must be an absolute path",
+        "D": "`environment` cannot use a `labels/latest` suffix"
+      },
+      "correct": "A",
+      "explanation": "Output names in the `outputs:` block must match what `${{outputs.<name>}}` references in the command. Here outputs declares `cleaned` but the command writes to `processed_data` — the binding can't resolve and submission fails. `type: command` is correct. Relative `code` paths work. `labels/latest` is a valid environment selector."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000017",
+    "type": "code-review",
+    "domain": "mlops-infra",
+    "topic": "Data Assets",
+    "difficulty": 1,
+    "source": "bank",
+    "tags": ["mlops-infra", "data-assets", "level-1", "fill-the-blank"],
+    "content": {
+      "sub_mode": "fill-the-blank",
+      "language": "python",
+      "snippet": "from azure.ai.ml import automl, Input\nfrom azure.ai.ml.constants import AssetTypes\n\ntraining_data = Input(\n    type=AssetTypes.___BLANK___,\n    path=\"azureml://datastores/workspaceblobstore/paths/data/train/\",\n)\n\nclassification_job = automl.classification(\n    compute=\"cpu-cluster\",\n    training_data=training_data,\n    target_column_name=\"label\",\n    primary_metric=\"AUC_weighted\",\n)",
+      "prompt": "Which AssetTypes value does AutoML training data require?",
+      "options": {
+        "A": "URI_FILE",
+        "B": "URI_FOLDER",
+        "C": "MLTABLE",
+        "D": "DATASTORE"
+      },
+      "correct": "C",
+      "explanation": "AutoML v2 requires `MLTABLE` for training data. MLTable wraps the file(s) with a schema and identifies the target column, both of which AutoML validates at submit time. `URI_FILE` and `URI_FOLDER` have no schema. `DATASTORE` isn't an asset type."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000018",
+    "type": "code-review",
+    "domain": "mlops-infra",
+    "topic": "Registries",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["mlops-infra", "registries", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.ml.entities import ManagedOnlineDeployment\n\ndeployment = ManagedOnlineDeployment(\n    name=\"blue\",\n    endpoint_name=\"churn-endpoint\",\n    model=\"churn-classifier:3\",\n    instance_type=\"Standard_DS3_v2\",\n    instance_count=1,\n)",
+      "prompt": "Why does `ml_client.online_deployments.begin_create_or_update(deployment)` fail?",
+      "options": {
+        "A": "`model` is missing a scheme prefix — should be `azureml:churn-classifier:3` (workspace) or an `azureml://registries/...` URI",
+        "B": "`instance_type` must be a GPU SKU for online endpoints",
+        "C": "`name='blue'` is reserved; pick another deployment name",
+        "D": "`instance_count` must be ≥ 2 for managed online deployments"
+      },
+      "correct": "A",
+      "explanation": "The `model` field accepts a fully-qualified asset reference. Without a scheme (`azureml:` for workspace, `azureml://registries/...` for registry, or an MLflow `runs:/...` URI), the SDK can't resolve the asset. Online endpoints work on CPU SKUs for non-LLM models. `blue` is the conventional name and isn't reserved. instance_count=1 is supported."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000019",
+    "type": "code-review",
+    "domain": "genaiops-infra",
+    "topic": "Bicep",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "bicep", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "yaml",
+      "snippet": "resource hub 'Microsoft.MachineLearningServices/workspaces@2024-04-01' = {\n  name: hubName\n  location: location\n  kind: 'Hub'\n  identity: { type: 'SystemAssigned' }\n  properties: {\n    storageAccount: storageId\n    keyVault: keyVaultId\n  }\n}\n\nresource project 'Microsoft.MachineLearningServices/workspaces@2024-04-01' = {\n  name: projectName\n  location: location\n  kind: 'Project'\n  identity: { type: 'SystemAssigned' }\n  properties: {\n    hubResourceId: hubName\n  }\n}",
+      "prompt": "Why does the project deployment fail with 'Hub not found'?",
+      "options": {
+        "A": "`hubResourceId` expects a full resource ID (use `hub.id`), not the bare `hubName` string — Bicep then orders the resources implicitly too",
+        "B": "`kind: 'Project'` must be lowercase: `kind: 'project'`",
+        "C": "Both resources must use the same `name` value",
+        "D": "The project resource must also have `kind: 'Hub'` to inherit identity"
+      },
+      "correct": "A",
+      "explanation": "`hubResourceId` is a resource ID, not a name. Passing the name string never resolves to an actual hub. Referencing `hub.id` (a) provides the right ID format and (b) makes Bicep implicitly order the project after the hub. `kind` values are PascalCase. Names must differ. Project inherits identity behavior from the hub regardless of `kind`."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000020",
+    "type": "code-review",
+    "domain": "genaiops-infra",
+    "topic": "Prompt Flow",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "prompt-flow", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "yaml",
+      "snippet": "$schema: https://azuremlschemas.azureedge.net/promptflow/latest/Flow.schema.json\ninputs:\n  question:\n    type: string\nnodes:\n  - name: answer\n    type: llm\n    source:\n      type: code\n      path: answer.jinja2\n    inputs:\n      question: ${inputs.question}\n    api: chat\n    deployment_name: gpt-4o\noutputs:\n  reply:\n    type: string\n    reference: ${answer.output}",
+      "prompt": "Why does the LLM node fail to authenticate at runtime?",
+      "options": {
+        "A": "The LLM node is missing the `connection: <connection_name>` field — the runtime has no Azure OpenAI credentials to use",
+        "B": "`api: chat` should be `api: chat_completion`",
+        "C": "`deployment_name` must include the API version (e.g., `gpt-4o-2024-08-06`)",
+        "D": "`outputs.reply.reference` should use double braces: `${{answer.output}}`"
+      },
+      "correct": "A",
+      "explanation": "Every LLM node needs a `connection:` field pointing at a configured connection on the project (or inherited from the hub) — that's how the runtime knows which Azure OpenAI account to call. Without it, the deployment can't authenticate. `api: chat` is the correct value. `deployment_name` is the deployment alias only. Prompt flow uses single-brace references in YAML."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000021",
+    "type": "code-review",
+    "domain": "genaiops-infra",
+    "topic": "Network Security",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genaiops-infra", "network-security", "level-2", "fill-the-blank"],
+    "content": {
+      "sub_mode": "fill-the-blank",
+      "language": "yaml",
+      "snippet": "resource aoai 'Microsoft.CognitiveServices/accounts@2024-04-01' = {\n  name: openAiName\n  location: location\n  kind: 'OpenAI'\n  sku: { name: 'S0' }\n  properties: {\n    publicNetworkAccess: '___BLANK___'\n    networkAcls: {\n      defaultAction: 'Deny'\n      virtualNetworkRules: []\n      ipRules: []\n    }\n  }\n}",
+      "prompt": "To force all traffic through private endpoints, what value should the blank hold?",
+      "options": {
+        "A": "Disabled",
+        "B": "PrivateOnly",
+        "C": "Internal",
+        "D": "Restricted"
+      },
+      "correct": "A",
+      "explanation": "`publicNetworkAccess` accepts only `Enabled` (default) and `Disabled`. With `Disabled` plus `defaultAction: Deny` and a private endpoint, all traffic flows over private link and the public endpoint is sealed. `PrivateOnly`, `Internal`, and `Restricted` are not valid values."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000022",
+    "type": "code-review",
+    "domain": "genaiops-infra",
+    "topic": "Managed Compute",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["genaiops-infra", "managed-compute", "level-3", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "yaml",
+      "snippet": "$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json\nname: llama-70b\nendpoint_name: my-llm-endpoint\nmodel: azureml://registries/azureml-meta/models/Llama-3-70B-Instruct/versions/1\ninstance_type: Standard_NC24ads_A100_v4\ninstance_count: 1\nrequest_settings:\n  request_timeout_ms: 60000\n  max_concurrent_requests_per_instance: 1\n",
+      "prompt": "Why does this deployment OOM at model load?",
+      "options": {
+        "A": "`Standard_NC24ads_A100_v4` has 1× A100 80 GB, but a 70B model in FP16 needs ~140 GB of GPU memory — use a multi-GPU SKU like `Standard_ND96asr_A100_v4` or a quantized model",
+        "B": "`instance_count` must be ≥ 2 for endpoint high availability",
+        "C": "`request_timeout_ms: 60000` is too low — remove the timeout",
+        "D": "The model must be downloaded to local storage first; the registry URI won't resolve"
+      },
+      "correct": "A",
+      "explanation": "70B params × 2 bytes (FP16) ≈ 140 GB just for weights, plus activations and KV cache during inference. A single A100 80 GB falls short. Switch to a multi-GPU SKU (8× A100 or H100) or deploy a quantized variant. instance_count=1 is fine for non-HA. Request timeouts are valid. Registry URIs resolve at deploy time."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000023",
+    "type": "code-review",
+    "domain": "genai-quality",
+    "topic": "Evaluation Metrics",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "evaluation-metrics", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.evaluation import RougeScoreEvaluator, RougeType\n\nrouge = RougeScoreEvaluator(rouge_type=RougeType.ROUGE_L)\n\nresult = rouge(\n    response=\"The capital of France is Paris.\",\n    ground_truth=\"Paris is the capital of France.\",\n)\n\nif result < 0.5:\n    print(\"Low ROUGE — investigate.\")",
+      "prompt": "Why does this script raise a TypeError on the final comparison?",
+      "options": {
+        "A": "ROUGE evaluators return a dict with keys like `rouge_precision`, `rouge_recall`, `rouge_f1_score` — `result < 0.5` compares a dict against a float",
+        "B": "`rouge_type=RougeType.ROUGE_L` should be `RougeType.ROUGEL`",
+        "C": "RougeScoreEvaluator must be instantiated with a credential",
+        "D": "ground_truth must be a list of strings, not a single string"
+      },
+      "correct": "A",
+      "explanation": "Azure AI evaluators return a result dict, not a scalar. ROUGE in particular emits precision, recall, and F1 sub-scores. Compare the specific key you care about: `result['rouge_f1_score'] < 0.5`. Enum spelling is ROUGE_L. Credential isn't required for ROUGE (it's not judge-model-based). Ground truth is a string."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000024",
+    "type": "code-review",
+    "domain": "genai-quality",
+    "topic": "Test Datasets",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "test-datasets", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.evaluation import GroundednessEvaluator, evaluate\nimport json\n\ndataset_path = \"qa.jsonl\"\nwith open(dataset_path, \"w\") as f:\n    for q, a in pairs:\n        f.write(json.dumps({\"query\": q, \"response\": a}) + \"\\n\")\n\nresults = evaluate(\n    data=dataset_path,\n    evaluators={\"groundedness\": GroundednessEvaluator(model_config=cfg)},\n)",
+      "prompt": "Why do all the Groundedness scores come back as errors or zeros?",
+      "options": {
+        "A": "Each JSONL row is missing the `context` key — Groundedness scores how well the response is supported by retrieved context",
+        "B": "JSONL must include a trailing comma after each row",
+        "C": "`data=` must point to an MLTable, not a JSONL file",
+        "D": "GroundednessEvaluator must be wrapped in `evaluator_chain([...])`"
+      },
+      "correct": "A",
+      "explanation": "Groundedness measures support-by-context. Without a `context` field on each row, the evaluator can't compute the score. Add the retrieved chunks (concatenated or as a list) as `context`. JSONL doesn't use trailing commas. `evaluate` accepts JSONL directly. There's no evaluator_chain wrapper requirement."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000025",
+    "type": "code-review",
+    "domain": "genai-quality",
+    "topic": "Tracing",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-quality", "tracing", "level-2", "fill-the-blank"],
+    "content": {
+      "sub_mode": "fill-the-blank",
+      "language": "python",
+      "snippet": "from opentelemetry import trace\nfrom promptflow.tracing import trace as pf_trace\n\ntracer = trace.get_tracer(__name__)\n\n@pf_trace\ndef retrieve(query: str) -> list[str]:\n    with tracer.start_as_current_span(\"___BLANK___\") as span:\n        span.set_attribute(\"query.length\", len(query))\n        # ... vector search ...\n        return chunks",
+      "prompt": "Which span name makes this trace usable in App Insights?",
+      "options": {
+        "A": "\"x\"",
+        "B": "\"retrieve.vector_search\"",
+        "C": "An empty string",
+        "D": "f\"trace-{uuid4()}\""
+      },
+      "correct": "B",
+      "explanation": "Descriptive, stable span names let you group, filter, and alert in App Insights: `traces | where name == 'retrieve.vector_search'`. Single-letter or empty names produce useless aggregates. Per-call UUIDs make every span unique, breaking grouping queries."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000026",
+    "type": "code-review",
+    "domain": "genai-quality",
+    "topic": "Continuous Monitoring",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["genai-quality", "continuous-monitoring", "level-3", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.ml.entities import OnlineEvaluationSchedule\n\nschedule = OnlineEvaluationSchedule(\n    name=\"hourly-eval\",\n    deployment=\"chat-flow:blue\",\n    sampling_rate=1.0,\n    interval_minutes=60,\n    evaluators=[\"groundedness\", \"relevance\", \"coherence\", \"fluency\"],\n)\nml_client.online_evaluation_schedules.begin_create_or_update(schedule)",
+      "prompt": "What is the practical problem with this configuration?",
+      "options": {
+        "A": "`sampling_rate=1.0` re-runs four judge-LLM evaluators on EVERY production request — the bill (and judge-model load) will balloon. Start at 0.05–0.1",
+        "B": "`interval_minutes=60` is invalid — Azure ML requires ≥ 1440",
+        "C": "Online evaluation cannot use the groundedness evaluator",
+        "D": "Schedules must declare a `cron` field, not `interval_minutes`"
+      },
+      "correct": "A",
+      "explanation": "Online evaluation reruns the listed evaluators on the sampled traces. Sampling rate 1.0 (100%) at hourly cadence with four judge-LLM evaluators is enormously expensive — each evaluator call is itself an LLM call. Sample 5–10% to start. Hourly cadence is allowed. Groundedness is supported. interval_minutes is a valid field on the schedule."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000027",
+    "type": "code-review",
+    "domain": "genai-optimization",
+    "topic": "Embedding Models",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["genai-optimization", "embedding-models", "level-3", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from openai import AzureOpenAI\nfrom azure.search.documents.models import VectorizedQuery\n\nclient = AzureOpenAI(azure_endpoint=AOAI_ENDPOINT, api_key=AOAI_KEY, api_version=\"2024-08-01-preview\")\n\nquery_vector = client.embeddings.create(\n    model=\"text-embedding-ada-002\",\n    input=user_question,\n).data[0].embedding\n\nresults = search_client.search(\n    search_text=None,\n    vector_queries=[VectorizedQuery(vector=query_vector, k_nearest_neighbors=5, fields=\"contentVector\")],\n)",
+      "prompt": "Retrieval recall on this index is suddenly near zero. The index `contentVector` field was rebuilt last week. What's the most likely cause?",
+      "options": {
+        "A": "The index was rebuilt with `text-embedding-3-small` but the query still uses `text-embedding-ada-002` — different vector spaces (similar dims, incompatible cosines). Query with the SAME model used to build the index",
+        "B": "k_nearest_neighbors=5 is too low; raise to 50",
+        "C": "search_text=None always returns empty results",
+        "D": "The index name `contentVector` should be `embedding`"
+      },
+      "correct": "A",
+      "explanation": "Different embedding models project text into different vector spaces. Even if dimensions match (ada-002 and text-embedding-3-small are both 1536-dim), cosine similarity between an ada-002 query vector and a text-embedding-3 chunk vector is nearly random. Always query with the same model used to build the index. k_nearest_neighbors=5 returns chunks just fine. search_text=None means pure vector search (works). Index field names are arbitrary."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000028",
+    "type": "code-review",
+    "domain": "genai-optimization",
+    "topic": "Hybrid Search",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "hybrid-search", "level-2", "fill-the-blank"],
+    "content": {
+      "sub_mode": "fill-the-blank",
+      "language": "python",
+      "snippet": "from azure.search.documents.models import VectorizedQuery\n\nresults = search_client.search(\n    search_text=user_question,\n    vector_queries=[VectorizedQuery(\n        vector=query_embedding,\n        k_nearest_neighbors=10,\n        fields=\"___BLANK___\",\n    )],\n    top=10,\n)",
+      "prompt": "What value should `fields` hold for hybrid search to work?",
+      "options": {
+        "A": "\"contentVector\" — the name of the indexed vector field in your Azure AI Search index",
+        "B": "\"content\" — the raw text field",
+        "C": "\"*\" — search all fields",
+        "D": "An empty string"
+      },
+      "correct": "A",
+      "explanation": "`fields` names the vector-typed field in the index (whatever you called it when you defined the index — `contentVector`, `embedding`, etc.). It is NOT the raw text field; that's keyed off `search_text`. Wildcards and empty strings produce errors at submit. Always match the actual index field name."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000029",
+    "type": "code-review",
+    "domain": "genai-optimization",
+    "topic": "Fine-tuned Model Deployment",
+    "difficulty": 3,
+    "source": "bank",
+    "tags": ["genai-optimization", "fine-tuned-model-deployment", "level-3", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "yaml",
+      "snippet": "$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json\nname: legal-llm\nendpoint_name: legal-endpoint\nmodel: azureml:llama-3-8b-base:1\nmodel_mount_path: /mnt/azureml/models/llama-3-8b-base\nenvironment: azureml://registries/azureml/environments/llm-serving:5\nenvironment_variables:\n  LORA_ADAPTER_URI: azureml:legal-lora-adapter:3\ninstance_type: Standard_DS3_v2\ninstance_count: 1\n",
+      "prompt": "Why does this deployment fail to load the model?",
+      "options": {
+        "A": "`Standard_DS3_v2` is a CPU SKU; serving an 8B Llama with a LoRA adapter needs a GPU SKU (e.g., `Standard_NC24ads_A100_v4`)",
+        "B": "`LORA_ADAPTER_URI` cannot use the `azureml:` scheme",
+        "C": "`model_mount_path` must be `/var/azureml/models/...`",
+        "D": "Environment must include the full Docker image SHA"
+      },
+      "correct": "A",
+      "explanation": "An 8B model needs a GPU with enough VRAM for the base weights plus the LoRA adapter — typically ≥ 16 GB. DS3_v2 has no GPU. NC24ads_A100_v4 or NC24_v3 work for an 8B model. azureml: scheme is valid for asset references. Mount paths are configurable. Environment references work with the registered version, not a SHA."
+    }
+  },
+  {
+    "id": "33333333-3333-4333-8333-000000000030",
+    "type": "code-review",
+    "domain": "genai-optimization",
+    "topic": "A/B Testing",
+    "difficulty": 2,
+    "source": "bank",
+    "tags": ["genai-optimization", "a-b-testing", "level-2", "find-the-bug"],
+    "content": {
+      "sub_mode": "find-the-bug",
+      "language": "python",
+      "snippet": "from azure.ai.ml.entities import OnlineEndpoint\n\nendpoint = OnlineEndpoint(\n    name=\"chat-endpoint\",\n    auth_mode=\"key\",\n    traffic={\"a\": 100, \"b\": 0},\n    mirror_traffic={\"b\": 10},\n)\nml_client.online_endpoints.begin_create_or_update(endpoint)",
+      "prompt": "The team intended to A/B test deployment B with 10% of real traffic. What's wrong with this config for that goal?",
+      "options": {
+        "A": "`mirror_traffic` SHADOWS 10% of requests to B (B's responses are discarded; users get A's answers). For a real split, raise B's `traffic` to e.g. 10 and drop A to 90",
+        "B": "`mirror_traffic` only works with serverless endpoints",
+        "C": "`auth_mode='key'` is incompatible with traffic splitting",
+        "D": "`traffic` percentages must sum to 100 — they do here, so the config is fine"
+      },
+      "correct": "A",
+      "explanation": "Mirror traffic copies real requests to a deployment for shadow evaluation — B sees the requests but its responses never reach the user. For a real A/B test where users sometimes see B's answers, raise B's value in `traffic` (e.g., `traffic={'a': 90, 'b': 10}`). Auth mode is unrelated; the percentages do sum to 100 but that's not enough."
+    }
   }
 ]
