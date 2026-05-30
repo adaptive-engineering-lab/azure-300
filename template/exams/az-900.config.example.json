@@ -1,0 +1,102 @@
+{
+  "_comment": "Example exam config for AZ-900 (Microsoft Azure Fundamentals). Replace exams.config.json at repo root with this when forking. Domain weights and topic names come from the published exam study guide; double-check at the source before relying on them.",
+  "exams": [
+    {
+      "code": "AZ-900",
+      "title": "Microsoft Azure Fundamentals",
+      "certificationTitle": "Microsoft Certified: Azure Fundamentals",
+      "level": "Fundamentals",
+      "passMark": 700,
+      "productionUrl": "az-900.yourdomain.com",
+
+      "domains": [
+        {
+          "slug": "cloud-concepts",
+          "label": "Cloud Concepts",
+          "weight": "25-30",
+          "topics": [
+            "Cloud computing", "Shared responsibility", "Cloud models",
+            "Cloud service types", "IaaS", "PaaS", "SaaS",
+            "Consumption-based model", "CapEx vs OpEx"
+          ]
+        },
+        {
+          "slug": "azure-architecture",
+          "label": "Azure Architecture & Services",
+          "weight": "35-40",
+          "topics": [
+            "Regions", "Region pairs", "Sovereign regions",
+            "Availability zones", "Resource groups", "Subscriptions",
+            "Management groups", "Compute", "Virtual machines", "Containers",
+            "Functions", "Networking", "Virtual networks", "VPN gateway",
+            "ExpressRoute", "Storage accounts", "Blob storage",
+            "Disk storage", "File storage", "Migration tools",
+            "Azure Arc", "Azure VMware Solution"
+          ]
+        },
+        {
+          "slug": "azure-management",
+          "label": "Azure Management & Governance",
+          "weight": "30-35",
+          "topics": [
+            "Cost management", "Pricing calculator", "TCO calculator",
+            "Tags", "Service Health", "Azure Monitor", "Log Analytics",
+            "Azure Advisor", "RBAC", "Azure Policy", "Resource locks",
+            "Service Trust Portal", "Microsoft Purview",
+            "Azure Resource Manager", "Bicep", "ARM templates",
+            "Azure portal", "Azure CLI", "Azure PowerShell"
+          ]
+        }
+      ],
+
+      "learningPaths": [
+        {
+          "id": "lp1",
+          "title": "Describe cloud concepts",
+          "url": "https://learn.microsoft.com/en-us/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/",
+          "moduleCount": 3,
+          "domains": ["cloud-concepts"]
+        },
+        {
+          "id": "lp2",
+          "title": "Describe Azure architecture and services",
+          "url": "https://learn.microsoft.com/en-us/training/paths/azure-fundamentals-describe-azure-architecture-services/",
+          "moduleCount": 7,
+          "domains": ["azure-architecture"]
+        },
+        {
+          "id": "lp3",
+          "title": "Describe Azure management and governance",
+          "url": "https://learn.microsoft.com/en-us/training/paths/describe-azure-management-governance/",
+          "moduleCount": 4,
+          "domains": ["azure-management"]
+        }
+      ],
+
+      "questionTargets": {
+        "total": 150,
+        "perDomain": {
+          "cloud-concepts": 45,
+          "azure-architecture": 60,
+          "azure-management": 45
+        },
+        "byType": {
+          "flashcard": 60,
+          "mcq": 80,
+          "code-review": 10
+        }
+      },
+
+      "gameModes": {
+        "flashcard": true,
+        "mcq": true,
+        "codeReview": false
+      },
+
+      "difficultyConfig": {
+        "lp3MaxDifficulty": 2,
+        "defaultMax": 2
+      }
+    }
+  ]
+}

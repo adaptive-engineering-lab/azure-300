@@ -1,0 +1,58 @@
+{
+  "_comment": "Blank exam config shell. Copy to exams.config.json at the repo root, replace every <PLACEHOLDER>, and remove this comment + any unused fields. See az-900.config.example.json or ai-900.config.example.json for filled-in examples.",
+  "exams": [
+    {
+      "code": "<EXAM-CODE>",
+      "title": "<Full exam title from Microsoft Learn>",
+      "certificationTitle": "<Full certification title>",
+      "level": "<Fundamentals | Associate | Expert | Specialty>",
+      "passMark": 700,
+      "productionUrl": "<exam-code.yourdomain.com>",
+
+      "domains": [
+        {
+          "slug": "<kebab-case-slug>",
+          "label": "<Human-readable label shown in UI>",
+          "weight": "<min-max%>",
+          "topics": [
+            "<Topic 1>",
+            "<Topic 2>"
+          ]
+        }
+      ],
+
+      "learningPaths": [
+        {
+          "id": "lp1",
+          "title": "<Learning path title>",
+          "url": "<https://learn.microsoft.com/en-us/training/paths/...>",
+          "moduleCount": 0,
+          "domains": ["<slug>"]
+        }
+      ],
+
+      "questionTargets": {
+        "total": 200,
+        "perDomain": {
+          "<slug>": 0
+        },
+        "byType": {
+          "flashcard": 0,
+          "mcq": 0,
+          "code-review": 0
+        }
+      },
+
+      "gameModes": {
+        "flashcard": true,
+        "mcq": true,
+        "codeReview": true
+      },
+
+      "difficultyConfig": {
+        "lp3MaxDifficulty": 2,
+        "defaultMax": 3
+      }
+    }
+  ]
+}

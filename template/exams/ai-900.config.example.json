@@ -1,0 +1,156 @@
+{
+  "_comment": "Example exam config for AI-900 (Microsoft Azure AI Fundamentals). Replace exams.config.json at repo root with this when forking. Domain weights and topic names come from the published exam study guide; double-check at the source before relying on them.",
+  "exams": [
+    {
+      "code": "AI-900",
+      "title": "Microsoft Azure AI Fundamentals",
+      "certificationTitle": "Microsoft Certified: Azure AI Fundamentals",
+      "level": "Fundamentals",
+      "passMark": 700,
+      "productionUrl": "ai-900.yourdomain.com",
+
+      "domains": [
+        {
+          "slug": "ai-workloads",
+          "label": "AI Workloads & Considerations",
+          "weight": "15-20",
+          "topics": [
+            "Machine learning workloads",
+            "Computer vision workloads",
+            "Natural language processing workloads",
+            "Document intelligence workloads",
+            "Knowledge mining workloads",
+            "Generative AI workloads",
+            "Responsible AI principles",
+            "Fairness", "Reliability and safety", "Privacy and security",
+            "Inclusiveness", "Transparency", "Accountability"
+          ]
+        },
+        {
+          "slug": "ml-on-azure",
+          "label": "Machine Learning on Azure",
+          "weight": "20-25",
+          "topics": [
+            "Regression", "Classification", "Clustering",
+            "Deep learning", "Azure Machine Learning",
+            "Automated machine learning", "Designer", "Compute",
+            "Data assets", "Model deployment", "Endpoints",
+            "Training jobs", "Evaluation metrics"
+          ]
+        },
+        {
+          "slug": "computer-vision",
+          "label": "Computer Vision on Azure",
+          "weight": "15-20",
+          "topics": [
+            "Image classification", "Object detection",
+            "Optical character recognition (OCR)",
+            "Facial detection and recognition",
+            "Azure AI Vision",
+            "Azure AI Face",
+            "Custom Vision",
+            "Form Recognizer / Document Intelligence"
+          ]
+        },
+        {
+          "slug": "natural-language",
+          "label": "Natural Language Processing on Azure",
+          "weight": "15-20",
+          "topics": [
+            "Key phrase extraction",
+            "Entity recognition",
+            "Sentiment analysis",
+            "Language detection",
+            "Translation",
+            "Speech to text", "Text to speech",
+            "Azure AI Language",
+            "Azure AI Speech",
+            "Question answering",
+            "Conversational language understanding"
+          ]
+        },
+        {
+          "slug": "generative-ai",
+          "label": "Generative AI on Azure",
+          "weight": "20-25",
+          "topics": [
+            "Large language models",
+            "Tokens", "Embeddings",
+            "Prompt engineering",
+            "Azure OpenAI Service",
+            "Azure AI Foundry",
+            "Copilots",
+            "Retrieval-augmented generation",
+            "Responsible AI for generative models",
+            "Content filters", "Safety evaluation"
+          ]
+        }
+      ],
+
+      "learningPaths": [
+        {
+          "id": "lp1",
+          "title": "Describe artificial intelligence workloads and considerations",
+          "url": "https://learn.microsoft.com/en-us/training/paths/get-started-with-artificial-intelligence-on-azure/",
+          "moduleCount": 1,
+          "domains": ["ai-workloads"]
+        },
+        {
+          "id": "lp2",
+          "title": "Describe fundamental principles of machine learning on Azure",
+          "url": "https://learn.microsoft.com/en-us/training/paths/create-no-code-predictive-models-azure-machine-learning/",
+          "moduleCount": 5,
+          "domains": ["ml-on-azure"]
+        },
+        {
+          "id": "lp3",
+          "title": "Describe features of computer vision workloads on Azure",
+          "url": "https://learn.microsoft.com/en-us/training/paths/explore-computer-vision-microsoft-azure/",
+          "moduleCount": 4,
+          "domains": ["computer-vision"]
+        },
+        {
+          "id": "lp4",
+          "title": "Describe features of natural language processing workloads on Azure",
+          "url": "https://learn.microsoft.com/en-us/training/paths/explore-natural-language-processing/",
+          "moduleCount": 3,
+          "domains": ["natural-language"]
+        },
+        {
+          "id": "lp5",
+          "title": "Describe features of generative AI workloads on Azure",
+          "url": "https://learn.microsoft.com/en-us/training/paths/introduction-generative-ai/",
+          "moduleCount": 3,
+          "domains": ["generative-ai"]
+        }
+      ],
+
+      "questionTargets": {
+        "total": 180,
+        "perDomain": {
+          "ai-workloads": 30,
+          "ml-on-azure": 40,
+          "computer-vision": 35,
+          "natural-language": 35,
+          "generative-ai": 40
+        },
+        "byType": {
+          "flashcard": 80,
+          "mcq": 90,
+          "code-review": 10
+        }
+      },
+
+      "gameModes": {
+        "flashcard": true,
+        "mcq": true,
+        "codeReview": false
+      },
+
+      "difficultyConfig": {
+        "lp3MaxDifficulty": 2,
+        "defaultMax": 2
+      }
+    }
+  ]
+}
